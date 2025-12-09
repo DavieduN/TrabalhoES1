@@ -4,13 +4,13 @@ import org.json.JSONObject;
 import unioeste.geral.endereco.bo.EnderecoEspecifico;
 import unioeste.geral.endereco.manager.UCEnderecoGeralServicos;
 
-import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.*;
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.*;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 
-@WebServlet("/api/enderecos/buscar-id")
+@WebServlet("/enderecos/buscar-id")
 public class ObterEnderecoPorIdServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {

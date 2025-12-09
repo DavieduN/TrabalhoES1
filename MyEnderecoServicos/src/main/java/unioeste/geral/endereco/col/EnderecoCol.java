@@ -35,8 +35,6 @@ public class EnderecoCol {
             bairroDAO.inserir(con, endereco.getBairro());
 
         if (endereco.getLogradouro().getIdLogradouro() == 0) {
-            if (endereco.getLogradouro().getTipoLogradouro().getIdTipoLogradouro() == 0)
-                tipoLogradouroDAO.inserir(con, endereco.getLogradouro().getTipoLogradouro());
             logradouroDAO.inserir(con, endereco.getLogradouro());
         }
         enderecoDAO.inserir(con, endereco);
