@@ -59,3 +59,44 @@ CREATE TABLE EnderecoEspecifico (
     CONSTRAINT pk_enderecoespecifico PRIMARY KEY (idEnderecoEspecifico),
     CONSTRAINT fk_especifico_generico FOREIGN KEY (idEndereco) REFERENCES Endereco (idEndereco)
 );
+
+INSERT INTO UnidadeFederativa (siglaUF, nomeUF) VALUES 
+('AC', 'Acre'),
+('AL', 'Alagoas'),
+('AP', 'Amapá'),
+('AM', 'Amazonas'),
+('BA', 'Bahia'),
+('CE', 'Ceará'),
+('DF', 'Distrito Federal'),
+('ES', 'Espírito Santo'),
+('GO', 'Goiás'),
+('MA', 'Maranhão'),
+('MT', 'Mato Grosso'),
+('MS', 'Mato Grosso do Sul'),
+('MG', 'Minas Gerais'),
+('PA', 'Pará'),
+('PB', 'Paraíba'),
+('PR', 'Paraná'),
+('PE', 'Pernambuco'),
+('PI', 'Piauí'),
+('RJ', 'Rio de Janeiro'),
+('RN', 'Rio Grande do Norte'),
+('RS', 'Rio Grande do Sul'),
+('RO', 'Rondônia'),
+('RR', 'Roraima'),
+('SC', 'Santa Catarina'),
+('SP', 'São Paulo'),
+('SE', 'Sergipe'),
+('TO', 'Tocantins');
+
+INSERT INTO TipoLogradouro (nomeTipoLogradouro) VALUES 
+('Rua'),
+('Avenida'),
+('Travessa'),
+('Alameda'),
+('Rodovia'),
+('Praça'),
+('Estrada'),
+('Viela'),
+('Largo'),
+('Beco');
