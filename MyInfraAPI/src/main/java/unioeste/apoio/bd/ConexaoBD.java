@@ -20,10 +20,17 @@ public class ConexaoBD {
             throw new Exception("Erro ao ler arquivo de configuração: " + e.getMessage());
         }
 
-        String url = props.getProperty("db.url");
-        String user = props.getProperty("db.user");
-        String pass = props.getProperty("db.password");
-        String driver = props.getProperty("db.driver");
+        String url = System.getenv("DB_URL");
+        if (url == null) url = props.getProperty("db.url");
+
+        String user = System.getenv("DB_USER");
+        if (user == null) user = props.getProperty("db.user");
+
+        String pass = System.getenv("DB_PASS");
+        if (pass == null) pass = props.getProperty("db.password");
+        
+        String driver = props.getProperty("db.driver"); 
+        if (driver == null) driver = "org.postgresql.Driver";
 
         try {
             Class.forName(driver);

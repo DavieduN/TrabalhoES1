@@ -43,6 +43,21 @@ public class TipoLogradouroDAO {
         return tipo;
     }
 
+    public TipoLogradouro buscarPorNome(Connection con, String nome) throws Exception {
+        String sql = "SELECT * FROM TipoLogradouro WHERE nomeTipoLogradouro = ?";
+        try (PreparedStatement stmt = con.prepareStatement(sql)) {
+            stmt.setString(1, nome);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                TipoLogradouro t = new TipoLogradouro();
+                t.setIdTipoLogradouro(rs.getInt("idTipoLogradouro"));
+                t.setNomeTipoLogradouro(rs.getString("nomeTipoLogradouro"));
+                return t;
+            }
+        }
+        return null;
+    }
+
     public List<TipoLogradouro> buscarTodos() throws Exception {
         Connection con = ConexaoBD.getConexao();
         String sql = "SELECT * FROM TipoLogradouro";

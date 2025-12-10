@@ -57,6 +57,22 @@ public class CidadeDAO {
         return cidade;
     }
 
+    public Cidade buscarPorNomeSigla(Connection con, String nomeCidade, String siglaUF) throws Exception {
+        String sql = "SELECT * FROM Cidade WHERE nomeCidade = ? AND siglaUF = ?";
+        try (PreparedStatement stmt = con.prepareStatement(sql)) {
+            stmt.setString(1, nomeCidade);
+            stmt.setString(2, siglaUF);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                Cidade c = new Cidade();
+                c.setIdCidade(rs.getInt("idCidade"));
+                c.setNomeCidade(rs.getString("nomeCidade"));
+                return c;
+            }
+        }
+        return null;
+    }
+
     public List<Cidade> buscarTodos() throws Exception {
         Connection con = ConexaoBD.getConexao();
         String sql = SQL_SELECT_COMPLETO + "ORDER BY c.nomeCidade";

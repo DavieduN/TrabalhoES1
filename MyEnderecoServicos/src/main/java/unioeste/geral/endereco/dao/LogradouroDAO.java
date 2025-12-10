@@ -54,6 +54,23 @@ public class LogradouroDAO {
         return logradouro;
     }
 
+    public Logradouro buscarPorNomeETipo(Connection con, String nome, int idTipo) throws Exception {
+    String sql = "SELECT * FROM Logradouro WHERE nomeLogradouro = ? AND idTipoLogradouro = ?";
+        
+        try (PreparedStatement stmt = con.prepareStatement(sql)) {
+            stmt.setString(1, nome);
+            stmt.setInt(2, idTipo);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                Logradouro l = new Logradouro();
+                l.setIdLogradouro(rs.getInt("idLogradouro"));
+                l.setNomeLogradouro(rs.getString("nomeLogradouro"));
+                return l;
+            }
+        }
+        return null;
+    }
+
     public List<Logradouro> buscarTodos() throws Exception {
         Connection con = ConexaoBD.getConexao();
         String sql = SQL_SELECT_COMPLETO + "ORDER BY l.nomeLogradouro";

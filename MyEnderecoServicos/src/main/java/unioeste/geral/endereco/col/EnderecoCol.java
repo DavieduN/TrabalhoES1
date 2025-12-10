@@ -6,7 +6,7 @@ import unioeste.geral.endereco.exception.EnderecoException;
 import java.sql.Connection;
 
 public class EnderecoCol {
-
+    final private UfDAO ufDAO;
     final private EnderecoDAO enderecoDAO;
     final private CidadeDAO cidadeDAO;
     final private BairroDAO bairroDAO;
@@ -14,6 +14,7 @@ public class EnderecoCol {
     final private TipoLogradouroDAO tipoLogradouroDAO;
 
     public EnderecoCol() {
+        this.ufDAO = new UfDAO();
         this.enderecoDAO = new EnderecoDAO();
         this.cidadeDAO = new CidadeDAO();
         this.bairroDAO = new BairroDAO();
@@ -23,20 +24,56 @@ public class EnderecoCol {
 
     public void cadastrarEndereco(Connection con, Endereco endereco) throws EnderecoException, Exception {
         if (endereco == null)
-            throw new EnderecoException("Endereço inválido.");
+            throw new EnderecoException("Endereço não informado.");
+        if (endereco.getCidade() == null)
+            throw new EnderecoException("Cidade não informada.");
+        if (endereco.getCidade().getUnidadeFederativa() == null)
+            throw new EnderecoException("UF não informada.");
+        if (endereco.getBairro() == null)
+            throw new EnderecoException("Bairro não informado.");
+        if (endereco.getLogradouro() == null)
+            throw new EnderecoException("Logradouro não informado.");
+        
         String cep = endereco.getCep().replaceAll("\\D", "");
-        if (cep.length() != 8)
-            throw new EnderecoException("CEP inválido. Deve conter 8 dígitos.");
+        if (cep.length() != 8) throw new EnderecoException("CEP inválido.");
 
-        if (endereco.getCidade().getIdCidade() == 0)
-            cidadeDAO.inserir(con, endereco.getCidade());
-
-        if (endereco.getBairro().getIdBairro() == 0)
-            bairroDAO.inserir(con, endereco.getBairro());
-
-        if (endereco.getLogradouro().getIdLogradouro() == 0) {
-            logradouroDAO.inserir(con, endereco.getLogradouro());
+        UnidadeFederativa uf = endereco.getCidade().getUnidadeFederativa();
+        UnidadeFederativa ufBanco = ufDAO.buscarPorSigla(con, uf.getSiglaUF());
+        
+        if (ufBanco == null){
+            if (uf.getNomeUF() == null) uf.setNomeUF(uf.getSiglaUF());
+            ufDAO.inserir(con, uf);
         }
+
+        Cidade cid = endereco.getCidade();
+        if (cid.getIdCidade() == 0) {
+            Cidade cidBanco = cidadeDAO.buscarPorNomeSigla(con, cid.getNomeCidade(), uf.getSiglaUF());
+            if (cidBanco != null) cid.setIdCidade(cidBanco.getIdCidade());
+            else cidadeDAO.inserir(con, cid);
+        }
+
+        Bairro bairro = endereco.getBairro();
+        if (bairro.getIdBairro() == 0) {
+            Bairro baiBanco = bairroDAO.buscarPorNome(con, bairro.getNomeBairro());
+            if (baiBanco != null) bairro.setIdBairro(baiBanco.getIdBairro());
+            else bairroDAO.inserir(con, bairro);
+        }
+
+        TipoLogradouro tipo = endereco.getLogradouro().getTipoLogradouro();
+        if (tipo != null && tipo.getIdTipoLogradouro() == 0) {
+            TipoLogradouro tipoBanco = tipoLogradouroDAO.buscarPorNome(con, tipo.getNomeTipoLogradouro());
+            if (tipoBanco != null) tipo.setIdTipoLogradouro(tipoBanco.getIdTipoLogradouro());
+            else tipoLogradouroDAO.inserir(con, tipo);
+        }
+
+        Logradouro logradouro = endereco.getLogradouro();
+        if (logradouro.getIdLogradouro() == 0) {
+            int idTipo = logradouro.getTipoLogradouro().getIdTipoLogradouro();
+            Logradouro logBanco = logradouroDAO.buscarPorNomeETipo(con, logradouro.getNomeLogradouro(), idTipo);
+            if (logBanco != null) logradouro.setIdLogradouro(logBanco.getIdLogradouro());
+            else logradouroDAO.inserir(con, logradouro);
+        }
+
         enderecoDAO.inserir(con, endereco);
     }
 }

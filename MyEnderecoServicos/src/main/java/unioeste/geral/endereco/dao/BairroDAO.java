@@ -42,6 +42,21 @@ public class BairroDAO {
         return bairro;
     }
 
+    public Bairro buscarPorNome(Connection con, String nomeBairro) throws Exception {
+        String sql = "SELECT * FROM Bairro WHERE nomeBairro = ?";
+        try (PreparedStatement stmt = con.prepareStatement(sql)) {
+            stmt.setString(1, nomeBairro);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                Bairro b = new Bairro();
+                b.setIdBairro(rs.getInt("idBairro"));
+                b.setNomeBairro(rs.getString("nomeBairro"));
+                return b;
+            }
+        }
+        return null;
+    }
+
     public List<Bairro> buscarTodos() throws Exception {
         Connection con = ConexaoBD.getConexao();
         String sql = "SELECT * FROM Bairro";

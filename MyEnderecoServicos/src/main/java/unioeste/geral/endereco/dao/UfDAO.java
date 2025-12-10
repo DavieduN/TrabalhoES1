@@ -40,6 +40,16 @@ public class UfDAO {
         return uf;
     }
 
+    public UnidadeFederativa buscarPorSigla(Connection con, String sigla) throws Exception {
+        String sql = "SELECT * FROM UnidadeFederativa WHERE siglaUF = ?";
+        try (PreparedStatement stmt = con.prepareStatement(sql)) {
+            stmt.setString(1, sigla);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) return new UnidadeFederativa(rs.getString("siglaUF"), rs.getString("nomeUF"));
+        }
+        return null;
+    }
+
     public List<UnidadeFederativa> buscarTodos() throws Exception {
         Connection con = ConexaoBD.getConexao();
         String sql = "SELECT * FROM UnidadeFederativa ORDER BY siglaUF";

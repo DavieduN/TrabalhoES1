@@ -1,0 +1,46 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:15
+    container_name: trabalho_postgres
+    environment:
+      POSTGRES_DB: trabalho_es
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: senha_secreta
+    volumes:
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  app:
+    build: .
+    container_name: trabalho_tomcat
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "8080:8080"
+    environment:
+      DB_URL: jdbc:postgresql://db:5432/trabalho_es
+      DB_USER: postgres
+      DB_PASS: senha_secreta
+
+  testes:
+    build: 
+      context: .
+      target: build
+    container_name: trabalho_testes
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DB_URL: jdbc:postgresql://db:5432/trabalho_es
+      DB_USER: postgres
+      DB_PASS: senha_secreta
+    command: mvn test
