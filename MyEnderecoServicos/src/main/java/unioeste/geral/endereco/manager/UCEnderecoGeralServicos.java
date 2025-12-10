@@ -12,7 +12,7 @@ public class UCEnderecoGeralServicos {
     private final UfCol ufCol;
     private final BairroCol bairroCol;
     private final TipoLogradouroCol tipoLogradouroCol;
-    private final LogradouroCol logradouroCol; // Adicionado
+    private final LogradouroCol logradouroCol;
 
     public UCEnderecoGeralServicos() {
         this.enderecoEspecificoCol = new EnderecoEspecificoCol();

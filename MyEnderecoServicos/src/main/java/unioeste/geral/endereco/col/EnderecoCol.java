@@ -34,8 +34,9 @@ public class EnderecoCol {
         if (endereco.getLogradouro() == null)
             throw new EnderecoException("Logradouro não informado.");
         
-        String cep = endereco.getCep().replaceAll("\\D", "");
-        if (cep.length() != 8) throw new EnderecoException("CEP inválido.");
+        String cepLimpo = endereco.getCep().replaceAll("\\D", "");
+        if (cepLimpo.length() != 8) throw new EnderecoException("CEP inválido (" + endereco.getCep() + ").");
+        endereco.setCep(cepLimpo); 
 
         UnidadeFederativa uf = endereco.getCidade().getUnidadeFederativa();
         UnidadeFederativa ufBanco = ufDAO.buscarPorSigla(con, uf.getSiglaUF());

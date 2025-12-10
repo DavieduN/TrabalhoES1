@@ -14,7 +14,7 @@ import java.util.List;
 public class EnderecoEspecificoCol {
 
     private final EnderecoEspecificoDAO dao;
-    private final EnderecoCol enderecoCol; // Reutiliza lógica de salvar o genérico
+    private final EnderecoCol enderecoCol;
     private final ConexaoViaCEP conexaoViaCEP;
 
     public EnderecoEspecificoCol() {
@@ -59,10 +59,10 @@ public class EnderecoEspecificoCol {
     }
 
     public List<EnderecoEspecifico> buscarDoBancoPorCep(String cep) throws Exception {
-        if (cep == null) return null;
+        if (cep == null) throw new EnderecoException("CEP vazio na busca.");
         String cepLimpo = cep.replaceAll("\\D", "");
         if (cepLimpo.length() != 8) throw new EnderecoException("CEP inválido na busca.");
-        return dao.buscarPorCep(cep);
+        return dao.buscarPorCep(cepLimpo);
     }
 
     public EnderecoEspecifico buscarPorId(EnderecoEspecifico endEsp) throws Exception {
@@ -80,10 +80,6 @@ public class EnderecoEspecificoCol {
         }
 
         return encontrado;
-    }
-
-    public EnderecoEspecifico buscarPorId(int id) throws Exception {
-        return dao.buscarPorId(id);
     }
 
     public EnderecoEspecifico consultarCepExterno(String cep) throws Exception {
