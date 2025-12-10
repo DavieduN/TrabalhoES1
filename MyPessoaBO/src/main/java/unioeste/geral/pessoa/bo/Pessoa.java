@@ -10,6 +10,7 @@ public abstract class Pessoa implements Serializable {
 
     protected int idPessoa;
     protected String nome;
+    protected String nomeSocial;
 
     protected EnderecoEspecifico endereco;
     protected List<Telefone> telefones;
@@ -26,6 +27,9 @@ public abstract class Pessoa implements Serializable {
 
     public String getNome() { return nome; }
     public void setNome(String nome) { this.nome = nome; }
+
+    public String getNomeSocial() { return nomeSocial; }
+    public void setNomeSocial(String nomeSocial) { this.nomeSocial = nomeSocial; }
 
     public EnderecoEspecifico getEndereco() { return endereco; }
     public void setEndereco(EnderecoEspecifico endereco) { this.endereco = endereco; }
