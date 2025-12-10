@@ -75,19 +75,20 @@ public class Teste02_CadastroEPopulacao {
         try {
             EnderecoEspecifico end = servicos.obterEnderecoExterno(ContextoTestes.CEP_FOZ);
             
-            String ataqueCurto = "10' OR '1'='1"; 
-            end.setNumero(ataqueCurto);
+            end.setNumero("666");
+            
+            String ataque = "Blc'); DROP TABLE x;--"; 
+            end.setComplemento(ataque);
             
             servicos.cadastrarEndereco(end);
             
             EnderecoEspecifico filtro = new EnderecoEspecifico();
             filtro.setIdEnderecoEspecifico(end.getIdEnderecoEspecifico());
-            
             EnderecoEspecifico salvo = servicos.obterEnderecoPorID(filtro);
 
-            assertEquals(ataqueCurto, salvo.getNumero(), "O SQL Injection não deve ser processado, apenas salvo como texto.");
+            assertEquals(ataque, salvo.getComplemento(), "O SQL Injection não deve ser processado, apenas salvo como texto.");
             
-            System.out.println("   + Sucesso: SQL Injection neutralizado.");
+            System.out.println("   + Sucesso: SQL Injection no complemento neutralizado.");
         } catch (Exception e) {
             fail("Erro no teste de SQL Injection: " + e.getMessage());
         }

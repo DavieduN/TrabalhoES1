@@ -52,6 +52,6 @@ services:
       - ./Frontend:/app
       - /app/node_modules
     environment:
-      - VITE_API_URL=http://localhost:8080/api
+      - VITE_API_URL=http://app:8080
     depends_on:
       - app

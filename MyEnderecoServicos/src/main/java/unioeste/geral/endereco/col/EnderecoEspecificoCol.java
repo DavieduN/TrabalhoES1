@@ -29,6 +29,10 @@ public class EnderecoEspecificoCol {
         if (endEsp.getNumero() == null || endEsp.getNumero().trim().isEmpty())
             throw new EnderecoException("O número do endereço é obrigatório.");
 
+        if (!endEsp.getNumero().matches("\\d+")) {
+            throw new EnderecoException("O número deve conter apenas dígitos numéricos (ex: 100). Valores como 'S/N' ou '10A' não são permitidos.");
+        }
+
         Connection con = null;
         try {
             con = ConexaoBD.getConexao();

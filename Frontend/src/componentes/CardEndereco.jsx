@@ -74,7 +74,7 @@ export default function CardEndereco({ endereco }) {
         <div className="flex justify-between items-start">
           <h3 className="font-semibold text-slate-100 text-sm">
             {dados.logradouro}
-            {dados.numero && <span className="text-blue-400 ml-1">, {dados.numero}</span>}
+            {dados.numero && <span className="text-blue-400 ml-1"> {dados.numero}</span>}
           </h3>
           
           {/* Badge de ID: Exibido apenas se o ID existir (útil para debug e referência) */}
