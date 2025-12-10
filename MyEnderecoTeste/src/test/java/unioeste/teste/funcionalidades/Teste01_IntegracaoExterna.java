@@ -9,7 +9,7 @@ import unioeste.teste.utils.ContextoTestes;
 import static org.junit.jupiter.api.Assertions.*;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-@Order(1) // Garante que este rode primeiro
+@Order(1)
 public class Teste01_IntegracaoExterna {
 
     private static UCEnderecoGeralServicos servicos;
@@ -49,8 +49,6 @@ public class Teste01_IntegracaoExterna {
 
             assertEquals(ContextoTestes.EXPECTED_CIDADE_SP, end.getCidade().getNomeCidade());
             assertEquals(ContextoTestes.EXPECTED_UF_SP, end.getCidade().getUnidadeFederativa().getSiglaUF());
-            
-            // Valida apenas se não é nulo, pois ViaCEP pode oscilar o nome exato do bairro
             assertNotNull(end.getBairro().getNomeBairro()); 
 
         } catch (Exception e) {
@@ -62,9 +60,7 @@ public class Teste01_IntegracaoExterna {
     @Order(3)
     public void validarTratamentoDeErros() {
         System.out.println(">>> [Teste 01] Validando Erros de CEP...");
-        // CEP Inexistente
         assertThrows(EnderecoException.class, () -> servicos.obterEnderecoExterno("99999999"));
-        // Formato Inválido
         assertThrows(EnderecoException.class, () -> servicos.obterEnderecoExterno("ABC"));
     }
 }

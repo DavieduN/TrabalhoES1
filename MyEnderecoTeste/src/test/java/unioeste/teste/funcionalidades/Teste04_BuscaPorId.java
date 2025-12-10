@@ -20,7 +20,6 @@ public class Teste04_BuscaPorId {
         servicos = new UCEnderecoGeralServicos();
     }
 
-    // --- TESTE DE ENDEREÇOS ESPECÍFICOS ---
 
     @Test
     @Order(1)
@@ -31,14 +30,12 @@ public class Teste04_BuscaPorId {
 
         for (Integer id : ContextoTestes.idsEnderecosGerados) {
             try {
-                // Usa auxiliar para criar objeto filtro (regra do prof)
                 EnderecoEspecifico filtro = criarFiltroEndereco(id);
                 EnderecoEspecifico res = servicos.obterEnderecoPorID(filtro);
 
                 assertNotNull(res, "Endereço ID " + id + " não encontrado");
                 assertEquals(id, res.getIdEnderecoEspecifico());
                 
-                // Valida integridade do JOIN (Endereço -> Cidade -> UF)
                 assertNotNull(res.getEndereco().getCidade().getNomeCidade());
                 assertNotNull(res.getEndereco().getCidade().getUnidadeFederativa().getSiglaUF());
 
@@ -52,31 +49,24 @@ public class Teste04_BuscaPorId {
     @Test
     @Order(2)
     public void buscarEnderecoIdInvalido() {
-        // Tenta buscar ID que não existe
         try {
             EnderecoEspecifico filtro = criarFiltroEndereco(999999);
             EnderecoEspecifico res = servicos.obterEnderecoPorID(filtro);
-            // Dependendo da implementação do DAO, retorna null ou lança erro. Ambos aceitáveis aqui.
             assertNull(res, "Deveria retornar nulo para ID inexistente");
         } catch (Exception e) {
-            // Se lançar exceção, ok também.
         }
     }
 
     @Test
     @Order(3)
     public void buscarEnderecoIdNegativo() {
-        // Tenta buscar ID negativo (Input malicioso/erro de int)
         try {
             EnderecoEspecifico filtro = criarFiltroEndereco(-1);
             servicos.obterEnderecoPorID(filtro);
-            // Se chegou aqui e retornou null, ok.
         } catch (Exception e) {
-            // Se lançou erro, ok.
         }
     }
 
-    // --- TESTE DE CIDADES ---
 
     @Test
     @Order(4)
@@ -92,7 +82,6 @@ public class Teste04_BuscaPorId {
                 assertNotNull(c);
                 assertEquals(id, c.getIdCidade());
                 assertNotNull(c.getNomeCidade());
-                // Valida o Lazy Load ou Eager Load da UF
                 assertNotNull(c.getUnidadeFederativa().getSiglaUF(), "A cidade deve trazer a UF preenchida");
                 
             } catch (Exception e) {

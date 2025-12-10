@@ -8,7 +8,7 @@ import unioeste.teste.utils.ContextoTestes;
 import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 
-@Order(3) // AGORA É O TERCEIRO
+@Order(3)
 public class Teste03_Listagens {
 
     private static UCEnderecoGeralServicos servicos = new UCEnderecoGeralServicos();
@@ -18,7 +18,6 @@ public class Teste03_Listagens {
         System.out.println(">>> [Teste 03] Verificando listagem de Cidades...");
         List<Cidade> cidades = servicos.consultarCidades();
         
-        // Esperamos pelo menos as 4 cidades que inserimos no Teste 02
         assertTrue(cidades.size() >= 4, "Deveria ter pelo menos 4 cidades cadastradas");
         
         boolean temFoz = cidades.stream().anyMatch(c -> c.getNomeCidade().contains("Foz do Iguaçu"));
@@ -33,7 +32,6 @@ public class Teste03_Listagens {
     public void verificarUfs() throws Exception {
         List<UnidadeFederativa> ufs = servicos.consultarUFs();
         
-        // Esperamos PR, SP, RJ
         assertTrue(ufs.stream().anyMatch(u -> u.getSiglaUF().equals("PR")));
         assertTrue(ufs.stream().anyMatch(u -> u.getSiglaUF().equals("SP")));
         assertTrue(ufs.stream().anyMatch(u -> u.getSiglaUF().equals("RJ")));
@@ -45,7 +43,7 @@ public class Teste03_Listagens {
         
         // 85867900 -> Avenida Tancredo Neves
         // 01001000 -> Praça da Sé
-        // 80020000 -> Praça Tiradentes (Geralmente)
+        // 80020000 -> Praça Tiradentes
         // 20040002 -> Rua da Assembléia
         
         assertTrue(tipos.stream().anyMatch(t -> t.getNomeTipoLogradouro().equals("Avenida")));

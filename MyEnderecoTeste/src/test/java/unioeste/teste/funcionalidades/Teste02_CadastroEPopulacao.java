@@ -26,21 +26,17 @@ public class Teste02_CadastroEPopulacao {
     public void popularDezEnderecosValidos() {
         System.out.println(">>> [Teste 02] Populando banco com dados reais...");
         try {
-            // Foz do Iguaçu (3 endereços)
             cadastrarAuxiliar(ContextoTestes.CEP_FOZ, "1000", "Bloco 1");
             cadastrarAuxiliar(ContextoTestes.CEP_FOZ, "2000", "Bloco 2");
             cadastrarAuxiliar(ContextoTestes.CEP_FOZ, "3000", "Lab");
             
-            // São Paulo (3 endereços)
             cadastrarAuxiliar(ContextoTestes.CEP_SAO_PAULO, "10", "Térreo");
             cadastrarAuxiliar(ContextoTestes.CEP_SAO_PAULO, "15", "Fundos");
             cadastrarAuxiliar(ContextoTestes.CEP_SAO_PAULO, "20", "Loja");
             
-            // Curitiba (2 endereços)
             cadastrarAuxiliar(ContextoTestes.CEP_CURITIBA, "500", "Centro");
             cadastrarAuxiliar(ContextoTestes.CEP_CURITIBA, "501", "Sala 2");
             
-            // Rio (2 endereços)
             cadastrarAuxiliar(ContextoTestes.CEP_RIO, "1", "Quiosque");
             cadastrarAuxiliar(ContextoTestes.CEP_RIO, "99", "Prédio Histórico");
 
@@ -70,7 +66,6 @@ public class Teste02_CadastroEPopulacao {
     @Test
     @Order(2)
     public void tentarCadastrosInvalidos() {
-        // ... (Mantém as validações de nulo anteriores)
         assertThrows(EnderecoException.class, () -> servicos.cadastrarEndereco(null));
     }
 
@@ -80,19 +75,15 @@ public class Teste02_CadastroEPopulacao {
         try {
             EnderecoEspecifico end = servicos.obterEnderecoExterno(ContextoTestes.CEP_FOZ);
             
-            // CORREÇÃO: Payload curto que cabe em VARCHAR(20)
             String ataqueCurto = "10' OR '1'='1"; 
             end.setNumero(ataqueCurto);
             
             servicos.cadastrarEndereco(end);
             
-            // --- CORREÇÃO AQUI ---
-            // Criamos o objeto filtro para passar para o método obterEnderecoPorID
             EnderecoEspecifico filtro = new EnderecoEspecifico();
             filtro.setIdEnderecoEspecifico(end.getIdEnderecoEspecifico());
             
             EnderecoEspecifico salvo = servicos.obterEnderecoPorID(filtro);
-            // ---------------------
 
             assertEquals(ataqueCurto, salvo.getNumero(), "O SQL Injection não deve ser processado, apenas salvo como texto.");
             
