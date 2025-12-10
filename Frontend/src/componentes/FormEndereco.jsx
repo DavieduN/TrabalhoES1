@@ -1,44 +1,55 @@
-import React, { useState } from 'react';
-// Importação dos serviços, incluindo busca de cidade
-import { consultarLocalPorCEP, buscarEnderecoPorID, buscarCidadePorID } from '../api/enderecoApi';
-import CardEndereco from './CardEndereco';
+import React, { useEffect, useState, useMemo } from 'react';
+import CardEndereco from './CardEndereco'; 
+import { listarUFs, listarTiposLogradouro, consultarExternoPorCEP, cadastrarEndereco } from '../api/enderecoApi';
 
 /**
- * Componente: ListaEnderecos (Container de Consultas)
+ * Componente: Formulário de Manutenção de Endereço (FormEndereco)
  * * Responsabilidade:
- * Atua como um painel centralizador para operações de leitura (Read) do sistema de Endereços.
- * Segue o padrão de projeto "Thin Client" (Cliente Magro), onde:
- * 1. Não realiza validações de regra de negócio (delega ao Backend via API).
- * 2. Envia inputs brutos (raw) para os serviços.
- * 3. Gerencia estados de UI (loading, erro, sucesso) baseados nas respostas HTTP.
- * * Funcionalidades:
- * - Listagem de endereços por CEP (One-to-Many).
- * - Busca de endereço específico por ID (One-to-One).
- * - Busca auxiliar de Cidade por ID (Entity Lookup).
+ * Implementa a funcionalidade de Manter Endereço. Atua como o "Thin Client" (Cliente Magro), 
+ * focando apenas na coleta de dados, gerenciamento de estado de UI (carregamento/erros)
+ * e delegação de todas as regras de negócio para a Camada de Serviço (Backend).
+ * * Funcionalidades de Domínio Consumidas:
+ * - listarUFs, listarTiposLogradouro: Para preenchimento dos campos Select.
+ * - consultarExternoPorCEP: Para preenchimento automático.
+ * - cadastrarEndereco: Para persistência no banco local.
  */
-export default function ListaEnderecos() {
+export default function FormEndereco() {
   
   // ===========================================================================
-  // ESTADOS (State Management)
+  // GERENCIAMENTO DE ESTADO (State Management)
+  // ===========================================================================
+  
+  // --- Estados de Domínio (Dados do Formulário) ---
+  const [ufs, setUfs] = useState([]);
+  const [tipos, setTipos] = useState([]);
+  
+  const [cep, setCep] = useState('');
+  const [tipoLogradouro, setTipoLogradouro] = useState('');
+  const [nomeLogradouro, setNomeLogradouro] = useState('');
+  const [numero, setNumero] = useState('');
+  const [complemento, setComplemento] = useState('');
+  const [bairro, setBairro] = useState('');
+  const [cidade, setCidade] = useState('');
+  const [uf, setUf] = useState('');
+
+  // --- Estados de UI (Interface) ---
+  const [status, setStatus] = useState(null); // { type: 'loading' | 'success' | 'error', text: string }
+  const isLoading = status?.type === 'loading';
+  const [enderecoVisualizacao, setEnderecoVisualizacao] = useState(null);
+
+
+  // ===========================================================================
+  // EFEITOS E CARGA INICIAL (Lifecycle)
   // ===========================================================================
 
-  // --- Contexto: Busca Massiva (Por CEP) ---
-  const [cepBusca, setCepBusca] = useState('');
-  const [listaEnderecos, setListaEnderecos] = useState(null); // null indica estado inicial (sem busca)
-  const [loadingCEP, setLoadingCEP] = useState(false);
-  const [errorCEP, setErrorCEP] = useState(null);
-
-  // --- Contexto: Busca Específica (Endereço por ID) ---
-  const [idBusca, setIdBusca] = useState('');
-  const [enderecoEncontrado, setEnderecoEncontrado] = useState(null);
-  const [loadingID, setLoadingID] = useState(false);
-  const [errorID, setErrorID] = useState(null);
-
-  // --- Contexto: Busca Auxiliar (Cidade por ID) ---
-  const [idCidadeBusca, setIdCidadeBusca] = useState('');
-  const [cidadeEncontrada, setCidadeEncontrada] = useState(null);
-  const [loadingCidade, setLoadingCidade] = useState(false);
-  const [errorCidade, setErrorCidade] = useState(null);
+  /**
+   * Efeito: Carrega UFs e Tipos de Logradouro no Lifecycle do componente.
+   * * Importante: A UI depende do backend fornecer os dados de domínio para os Selects.
+   */
+  useEffect(() => {
+    listarUFs().then(setUfs).catch(() => setUfs([]));
+    listarTiposLogradouro().then(setTipos).catch(() => setTipos([]));
+  }, []);
 
 
   // ===========================================================================
@@ -46,191 +57,206 @@ export default function ListaEnderecos() {
   // ===========================================================================
 
   /**
-   * Executa a consulta de endereços baseada em um CEP.
-   * Serviço consumido: `obterEnderecoPorCEP`
-   * * Comportamento:
-   * - Envia o CEP sem pré-processamento (raw string).
-   * - Trata resposta vazia como array vazio [].
-   * - Exibe erros de validação retornados pelo servidor (ex: "CEP Inválido").
+   * Handler: Busca Endereço em Serviço Externo (ViaCEP simulado).
+   * * Comportamento Thin Client:
+   * 1. Limpa o CEP (remove não-dígitos) apenas para o formato da API de busca.
+   * 2. Envia a requisição sem validação de campo obrigatório ou tamanho.
+   * 3. Mapeia o resultado aninhado do backend para os estados locais (preenchimento automático).
    */
-  async function handleBuscarPorCEP(e) {
+  async function handleBuscarExterno(e) {
     e?.preventDefault();
-    
-    // Inicia estado de carregamento
-    setLoadingCEP(true);
-    setErrorCEP(null);
-    setListaEnderecos([]);
+    // Limpeza MÍNIMA do CEP, apenas para o formato esperado pelo ViaCEP (8 dígitos puros)
+    const cleanCep = cep.replace(/\D/g, ''); 
+
+    setStatus({ type: 'loading', text: 'Buscando...' });
+    setEnderecoVisualizacao(null); 
 
     try {
-      // Chamada assíncrona ao serviço de domínio
-      const data = await consultarLocalPorCEP(cepBusca);
+      const data = await consultarExternoPorCEP(cleanCep);
       
-      // Garante integridade do tipo Array para o renderizador
-      setListaEnderecos(Array.isArray(data) ? data : []);
+      if (!data || !data.endereco) {
+          setStatus({type:'error', text:'CEP não encontrado.'});
+          return;
+      }
+
+      // Mapeamento dos dados aninhados (Adapter Pattern)
+      const root = data.endereco; 
+      const rua = root.logradouro?.nomeLogradouro || '';
+      const bairroVal = root.bairro?.nomeBairro || '';
+      const cidadeVal = root.cidade?.nomeCidade || '';
+      const ufVal = root.cidade?.unidadeFederativa?.siglaUF || '';
+      const tipoVal = root.logradouro?.tipoLogradouro?.nomeTipoLogradouro || '';
+
+      // Preenche estados
+      setNomeLogradouro(rua);
+      setBairro(bairroVal);
+      setCidade(cidadeVal);
+      setUf(ufVal);
+      setTipoLogradouro(tipoVal);
+
+      // Prepara o objeto para visualização no Card
+      setEnderecoVisualizacao({ ...root, logradouro: rua, bairro: bairroVal, cidade: cidadeVal, uf: ufVal, cep: root.cep || cleanCep, id: data.idEnderecoEspecifico });
+
+      setStatus({ type: 'success', text: 'Encontrado!' });
+
     } catch (err) {
-      // Captura e exibe a mensagem de exceção vinda da camada de serviço/backend
-      setErrorCEP(err.message || 'Erro ao buscar.');
-    } finally {
-      setLoadingCEP(false);
+      console.error(err);
+      // Exibe erro genérico ou a mensagem de exceção vinda do Backend
+      setStatus({ type: 'error', text: err.message || 'Erro ao buscar.' });
     }
   }
 
   /**
-   * Busca uma entidade Endereço única pelo seu Identificador (ID).
-   * Serviço consumido: `obterEnderecoPorID`
-   * * Comportamento:
-   * - Envia o ID como string para o serviço (conversão implícita ou tratamento no back).
+   * Handler: Cadastrar Endereço.
+   * * Comportamento Thin Client:
+   * 1. Monta o Payload JSON aninhado (DTO) exigido pela arquitetura de N-Camadas.
+   * 2. NÃO realiza validação de campos vazios ou formatos (ex: CPF, CEP, etc.).
+   * 3. Delega totalmente a validação e persistência ao serviço `cadastrarEndereco`.
    */
-  async function handleBuscarPorID(e) {
+  async function handleCadastrar(e) {
     e?.preventDefault();
     
-    setLoadingID(true);
-    setErrorID(null);
-    setEnderecoEncontrado(null);
+    // Preparação do Payload JSON aninhado
+    const payload = {
+      numero: String(numero),
+      complemento: complemento || '',
+      endereco: {
+        // Envia o CEP limpo para o formato esperado pelo backend
+        cep: String(cep).replace(/\D/g, ''),
+        cidade: {
+          nomeCidade: String(cidade),
+          unidadeFederativa: { siglaUF: String(uf).toUpperCase() } // Conversão simples para o formato padrão do banco
+        },
+        bairro: { nomeBairro: String(bairro || '') },
+        logradouro: {
+          nomeLogradouro: String(nomeLogradouro),
+          tipoLogradouro: { nomeTipoLogradouro: String(tipoLogradouro || '') }
+        }
+      }
+    };
 
-    try {
-      // O input do usuário é enviado diretamente. A validação numérica é responsabilidade do DTO/Backend.
-      const data = await buscarEnderecoPorID(idBusca);
-      setEnderecoEncontrado(data);
-    } catch (err) {
-      setErrorID(err.message || 'Não encontrado.');
-    } finally {
-      setLoadingID(false);
-    }
-  }
-
-  /**
-   * Busca uma entidade Cidade única pelo seu ID.
-   * Serviço consumido: `obterCidade`
-   * * Nota: Esta é uma funcionalidade auxiliar para validar a integridade referencial
-   * ou checar existência de cidades cadastradas independentemente de endereços.
-   */
-  async function handleBuscarCidade(e) {
-    e?.preventDefault();
+    setStatus({ type: 'loading', text: 'Salvando...' });
     
-    setLoadingCidade(true);
-    setErrorCidade(null);
-    setCidadeEncontrada(null);
-
     try {
-      const data = await buscarCidadePorID(idCidadeBusca);
-      
-      // Validação de nulidade (Defensive Programming) caso o backend retorne 200 OK mas corpo vazio
-      if (!data) throw new Error("Cidade não encontrada");
-      
-      setCidadeEncontrada(data);
+      const result = await cadastrarEndereco(payload);
+      setStatus({ type: 'success', text: `Cadastrado! ID: ${result?.id || 'OK'}` });
+      setEnderecoVisualizacao(null); 
     } catch (err) {
-      setErrorCidade(err.message || 'Cidade não encontrada.');
-    } finally {
-      setLoadingCidade(false);
+      // Captura e exibe a mensagem de exceção/erro HTTP retornada pelo Backend
+      setStatus({ type: 'error', text: err.message || 'Erro ao cadastrar.' });
     }
   }
 
   // ===========================================================================
-  // RENDERIZAÇÃO (View Layer)
+  // COMPONENTE DE UI (Presentation)
   // ===========================================================================
+
+  // Helper Component para mensagens de status
+  const StatusMessage = () => {
+    if (!status) return null;
+    const colors = {
+      loading: 'bg-blue-500/20 text-blue-300 border-blue-500/30',
+      success: 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30',
+      error: 'bg-red-500/20 text-red-300 border-red-500/30'
+    };
+    return (
+      <div className={`mt-4 p-3 rounded border text-sm text-center ${colors[status.type]}`}>
+        {status.text}
+      </div>
+    );
+  };
+
   return (
-    <div className="space-y-6">
+    <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
       
-      {/* -------------------------------------------------------------------------- */}
-      {/* BOX 1: PAINEL DE CONSULTA POR CEP                                          */}
-      {/* -------------------------------------------------------------------------- */}
-      <div className="bg-slate-800 rounded-lg p-6 border border-slate-700 shadow-lg flex flex-col h-[450px]">
-        <h2 className="text-lg font-bold text-white mb-4">Base Local (Por CEP)</h2>
-        
-        <form className="flex gap-2 mb-4" onSubmit={handleBuscarPorCEP}>
-          <input 
-            className="input-modern" 
-            placeholder="CEP..." 
-            value={cepBusca} 
-            // Two-way binding sem filtros (Input Raw)
-            onChange={e => setCepBusca(e.target.value)} 
-          />
-          <button disabled={loadingCEP} className="btn-modern btn-primary">
-            {loadingCEP ? '...' : 'Listar'}
-          </button>
-        </form>
-
-        <div className="flex-1 overflow-y-auto space-y-3 pr-2 custom-scrollbar">
-          {/* Feedback de Erro do Servidor */}
-          {errorCEP && <div className="p-3 bg-red-900/20 text-red-300 rounded text-sm">{errorCEP}</div>}
-          
-          {/* Lista de Resultados (Iteração de Componentes) */}
-          {listaEnderecos?.map((item) => (
-            <CardEndereco key={item.idEnderecoEspecifico || item.id} endereco={item} />
-          ))}
-          
-          {/* Estado Vazio (Empty State) */}
-          {listaEnderecos?.length === 0 && !errorCEP && !loadingCEP && (
-            <div className="text-slate-500 text-center py-10">Nada encontrado.</div>
-          )}
-        </div>
-      </div>
-
-      {/* -------------------------------------------------------------------------- */}
-      {/* BOX 2: PAINEL DE BUSCA POR ID (ENTIDADE ENDEREÇO)                          */}
-      {/* -------------------------------------------------------------------------- */}
-      <div className="bg-slate-800 rounded-lg p-6 border border-slate-700 shadow-lg">
-        <h2 className="text-lg font-bold text-white mb-4">Busca Endereço por ID</h2>
-        <form className="flex gap-2 mb-4" onSubmit={handleBuscarPorID}>
-          <input 
-            className="input-modern" 
-            placeholder="ID Endereço..." 
-            value={idBusca} 
-            onChange={e => setIdBusca(e.target.value)} 
-          />
-          <button disabled={loadingID} className="btn-modern bg-purple-600 text-white hover:bg-purple-500">
-            Buscar
-          </button>
-        </form>
-        
-        {/* Renderização Condicional do Resultado */}
-        {enderecoEncontrado && <CardEndereco endereco={enderecoEncontrado} />}
-        {errorID && <div className="p-3 bg-red-900/20 text-red-300 rounded text-sm">{errorID}</div>}
-      </div>
-
-      {/* -------------------------------------------------------------------------- */}
-      {/* BOX 3: PAINEL DE BUSCA POR ID (ENTIDADE CIDADE)                            */}
-      {/* -------------------------------------------------------------------------- */}
-      <div className="bg-slate-800 rounded-lg p-6 border border-slate-700 shadow-lg">
-        <h2 className="text-lg font-bold text-white mb-2 flex items-center gap-2">
-          {/* Ícone SVG inline para decoração */}
-          <svg className="w-5 h-5 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-          </svg>
-          Busca Cidade (Auxiliar)
+      {/* FORMULÁRIO */}
+      <div className="lg:col-span-7 bg-slate-800 rounded-lg p-6 border border-slate-700 shadow-lg">
+        <h2 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
+          Cadastro de Endereço
         </h2>
-        <p className="text-xs text-slate-400 mb-4">Teste do serviço `obterCidade`.</p>
 
-        <form className="flex gap-2 mb-4" onSubmit={handleBuscarCidade}>
-          <input 
-            className="input-modern" 
-            placeholder="ID Cidade..." 
-            value={idCidadeBusca} 
-            onChange={e => setIdCidadeBusca(e.target.value)} 
-          />
-          <button disabled={loadingCidade} className="btn-modern bg-emerald-600 text-white hover:bg-emerald-500">
-            Buscar
-          </button>
-        </form>
-
-        {/* Card Ad-hoc para exibição simples de Cidade (sem componente separado) */}
-        {cidadeEncontrada && (
-          <div className="animate-enter bg-slate-700/50 p-4 rounded border border-slate-600">
-            <div className="text-xs text-emerald-400 uppercase font-bold mb-1">Cidade Encontrada:</div>
-            <div className="text-lg font-bold text-white">
-              {cidadeEncontrada.nomeCidade || cidadeEncontrada.nome}
-            </div>
-            <div className="text-sm text-slate-300">
-              Estado: {cidadeEncontrada.unidadeFederativa?.nomeUF || cidadeEncontrada.uf || '-'} 
-              <span className="ml-1 text-slate-400">({cidadeEncontrada.unidadeFederativa?.siglaUF || '-'})</span>
+        <form onSubmit={handleCadastrar} className="space-y-4">
+          
+          {/* CEP */}
+          <div>
+            <label className="text-xs font-semibold text-slate-400 uppercase ml-1">CEP</label>
+            <div className="flex gap-2 mt-1">
+              <input 
+                value={cep} 
+                onChange={e => setCep(e.target.value)}
+                placeholder="00000000"
+                className="input-modern font-mono text-lg"
+              />
+              <button type="button" onClick={handleBuscarExterno} disabled={isLoading} className="btn-modern btn-ghost">
+                Buscar
+              </button>
             </div>
           </div>
-        )}
-        
-        {errorCidade && <div className="p-3 bg-red-900/20 text-red-300 rounded text-sm">{errorCidade}</div>}
+
+          {/* Tipo e Logradouro */}
+          <div className="grid grid-cols-4 gap-4">
+            <div className="col-span-1">
+              <label className="text-xs font-semibold text-slate-400 uppercase ml-1">Tipo</label>
+              <select value={tipoLogradouro} onChange={e => setTipoLogradouro(e.target.value)} className="input-modern mt-1 appearance-none">
+                <option value="">...</option>
+                {tipos.map(t => <option key={t.id||t} value={t.nomeTipoLogradouro||t}>{t.nomeTipoLogradouro||t}</option>)}
+              </select>
+            </div>
+            <div className="col-span-3">
+              <label className="text-xs font-semibold text-slate-400 uppercase ml-1">Logradouro</label>
+              <input value={nomeLogradouro} onChange={e => setNomeLogradouro(e.target.value)} className="input-modern mt-1" />
+            </div>
+          </div>
+
+          {/* Número e Complemento */}
+          <div className="grid grid-cols-4 gap-4">
+            <div className="col-span-1">
+              <label className="text-xs font-semibold text-slate-400 uppercase ml-1">Número</label>
+              <input value={numero} onChange={e => setNumero(e.target.value)} className="input-modern mt-1" />
+            </div>
+            <div className="col-span-3">
+              <label className="text-xs font-semibold text-slate-400 uppercase ml-1">Complemento</label>
+              <input value={complemento} onChange={e => setComplemento(e.target.value)} className="input-modern mt-1" />
+            </div>
+          </div>
+
+          {/* Bairro, Cidade, UF */}
+          <div className="grid grid-cols-6 gap-4">
+             <div className="col-span-2">
+               <label className="text-xs font-semibold text-slate-400 uppercase ml-1">Bairro</label>
+               <input value={bairro} onChange={e => setBairro(e.target.value)} className="input-modern mt-1" />
+             </div>
+             <div className="col-span-3">
+               <label className="text-xs font-semibold text-slate-400 uppercase ml-1">Cidade</label>
+               <input value={cidade} onChange={e => setCidade(e.target.value)} className="input-modern mt-1" />
+             </div>
+             <div className="col-span-1">
+               <label className="text-xs font-semibold text-slate-400 uppercase ml-1">UF</label>
+               <select value={uf} onChange={e => setUf(e.target.value)} className="input-modern mt-1 appearance-none">
+                 <option value=""></option>
+                 {ufs.map(u => <option key={u.id||u} value={u.siglaUF||u}>{u.siglaUF||u}</option>)}
+               </select>
+             </div>
+          </div>
+
+          <div className="pt-4">
+            <button type="submit" disabled={isLoading} className="btn-modern btn-primary w-full">
+              Confirmar Cadastro
+            </button>
+            <StatusMessage />
+          </div>
+        </form>
       </div>
 
+      {/* PREVIEW */}
+      <div className="lg:col-span-5 bg-slate-800 rounded-lg p-6 border border-slate-700 shadow-lg min-h-[200px]">
+        <h3 className="text-xs font-bold text-slate-500 uppercase mb-4">Preview da Busca</h3>
+        {enderecoVisualizacao ? (
+          <CardEndereco endereco={enderecoVisualizacao} />
+        ) : (
+          <div className="text-slate-600 text-center py-10 text-sm">Aguardando busca...</div>
+        )}
+      </div>
     </div>
   );
 }
