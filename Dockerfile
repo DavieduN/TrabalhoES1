@@ -1,5 +1,4 @@
-FROM maven:3.9.6-eclipse-temurin-17 AS build
-
+FROM maven:3.9.6-eclipse-temurin-17 AS builder
 WORKDIR /app
 
 COPY pom.xml .
@@ -8,17 +7,22 @@ COPY MyEnderecoBO/pom.xml MyEnderecoBO/
 COPY MyEnderecoServicos/pom.xml MyEnderecoServicos/
 COPY MyEnderecoTeste/pom.xml MyEnderecoTeste/
 
+RUN mvn dependency:go-offline -B -DfailIfNoTests=false
+
 COPY MyInfraAPI/src MyInfraAPI/src
 COPY MyEnderecoBO/src MyEnderecoBO/src
 COPY MyEnderecoServicos/src MyEnderecoServicos/src
 COPY MyEnderecoTeste/src MyEnderecoTeste/src
 
-RUN mvn clean install -DskipTests
+RUN mvn package -DskipTests -DfailIfNoTests=false
 
-FROM tomcat:10.1.19-jdk17
+FROM tomcat:10.1-jdk17
+WORKDIR /usr/local/tomcat
 
-RUN rm -rf /usr/local/tomcat/webapps/ROOT
+RUN rm -rf webapps/*
 
-COPY --from=build /app/MyEnderecoServicos/target/MyEnderecoServicos-1.0-SNAPSHOT.war /usr/local/tomcat/webapps/api.war
+COPY --from=builder /app/MyEnderecoServicos/target/endereco.war webapps/endereco.war
 
 EXPOSE 8080
+
+CMD ["catalina.sh", "run"]

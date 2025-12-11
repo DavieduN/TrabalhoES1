@@ -17,7 +17,9 @@ services:
       retries: 5
 
   app:
-    image: tomcat:10.1-jdk17
+    build:
+      context: .
+      dockerfile: Dockerfile
     container_name: trabalho_tomcat
     depends_on:
       db:
@@ -25,13 +27,11 @@ services:
     ports:
       - "8080:8080"
       - "5005:5005"
-    volumes:
-      - ./MyEnderecoServicos/target/endereco.war:/usr/local/tomcat/webapps/endereco.war
     environment:
       JAVA_OPTS: "-Xmx512m -Xms256m"
 
   testes:
-    image: maven:3.8.5-openjdk-17
+    image: maven:3.9.6-eclipse-temurin-17
     container_name: trabalho_testes
     working_dir: /app
     volumes:
@@ -54,10 +54,3 @@ services:
       - VITE_API_URL=http://app:8080/endereco
     depends_on:
       - app
-
-  # FUTURO: frontend-estudo-a
-  # frontend-estudo-a:
-  #   build: ./FrontendEstudoA
-  #   ports: ["5174:5173"]
-  #   environment:
-  #     - VITE_API_URL=http://app:8080/estudoA
