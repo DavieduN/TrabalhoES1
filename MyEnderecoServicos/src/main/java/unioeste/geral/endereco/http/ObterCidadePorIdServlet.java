@@ -34,7 +34,7 @@ public class ObterCidadePorIdServlet extends HttpServlet {
 
         } catch (Exception e) {
             resp.setStatus(500);
-            out.print("{\"erro\": \"" + e.getMessage() + "\"}");
+            out.print("{\"error\": \"" + e.getMessage() + "\"}");
         }
     }
 }

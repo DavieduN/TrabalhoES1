@@ -39,10 +39,10 @@ Todas as requisições e respostas são em JSON (UTF-8).
 ### 📍 Domínios (Auxiliares)
 Endpoints de leitura para popular combos no Frontend.
 
-| Método | Endpoint                     | Descrição |
-|---|------------------------------|---|
-| GET | `/endereco/ufs`              | Lista todas as Unidades Federativas (Sigla/Nome) |
-| GET | `/endereco/tipos-logradouro` | Lista tipos (Rua, Avenida, Praça...) ordenados |
+| Método | Endpoint                     | Descrição                                                  |
+|---|------------------------------|------------------------------------------------------------|
+| GET | `/endereco/ufs`              | Lista todas as Unidades Federativas (Sigla/Nome) ordenadas |
+| GET | `/endereco/tipos-logradouro` | Lista tipos (Rua, Avenida, Praça...) ordenados             |
 
 ### 🔍 Consultas de Endereço
 

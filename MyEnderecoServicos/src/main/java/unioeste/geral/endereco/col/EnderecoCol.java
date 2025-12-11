@@ -60,7 +60,7 @@ public class EnderecoCol {
             throw new EnderecoException("CEP não encontrado na base externa.");
 
         Endereco endereco = new Endereco();
-        endereco.setCep(json.getString("cep"));
+        endereco.setCep(json.getString("cep").replaceAll("\\D", ""));
 
         Cidade c = new Cidade();
         c.setNomeCidade(json.getString("localidade"));

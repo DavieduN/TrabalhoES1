@@ -43,14 +43,14 @@ services:
         condition: service_healthy
 
   frontend:
-    build: ./Frontend
+    build: ./EnderecoFront
     container_name: trabalho_frontend_endereco
     ports:
       - "5173:5173"
     volumes:
-      - ./Frontend:/app
+      - ./EnderecoFront:/app
       - /app/node_modules
     environment:
-      - VITE_API_URL=http://app:8080/endereco
+      - VITE_API_URL=http://localhost:8080
     depends_on:
       - app

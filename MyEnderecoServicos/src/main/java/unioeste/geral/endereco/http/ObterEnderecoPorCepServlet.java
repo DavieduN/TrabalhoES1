@@ -25,7 +25,7 @@ public class ObterEnderecoPorCepServlet extends HttpServlet {
             out.print(new JSONArray(servicos.obterEnderecoPorCep(cep)));
         } catch (Exception e) {
             resp.setStatus(500);
-            out.print("{\"erro\": \"" + e.getMessage() + "\"}");
+            out.print("{\"error\": \"" + e.getMessage() + "\"}");
         }
     }
 }

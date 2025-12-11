@@ -31,13 +31,12 @@ public class CadastrarEnderecoServlet extends HttpServlet {
             JSONObject json = new JSONObject(sb.toString());
             Endereco novoEnd = converterJsonParaObjeto(json);
             UCEnderecoGeralServicos servicos = new UCEnderecoGeralServicos();
-            servicos.cadastrarEndereco(novoEnd);
-            out.print(new JSONObject(novoEnd));
-
+            Endereco enderecoSalvo = servicos.cadastrarEndereco(novoEnd);
+            out.print(new JSONObject(enderecoSalvo));
         } catch (Exception e) {
             e.printStackTrace();
             resp.setStatus(500);
-            out.print("{\"erro\": \"" + e.getMessage() + "\"}");
+            out.print("{\"error\": \"" + e.getMessage() + "\"}");
         }
     }
 
