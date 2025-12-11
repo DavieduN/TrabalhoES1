@@ -42,48 +42,27 @@ public class CidadeDAO {
         }
     }
 
-    public Cidade buscarPorId(int id) throws Exception {
-        Connection con = ConexaoBD.getConexao();
+    public Cidade buscarPorId(Connection con, int id) throws Exception {
         String sql = SQL_SELECT_COMPLETO + "WHERE c.idCidade = ?";
         Cidade cidade = null;
-
         try (PreparedStatement stmt = con.prepareStatement(sql)) {
             stmt.setInt(1, id);
-            ResultSet rs = stmt.executeQuery();
-            if (rs.next()) cidade = montarCidade(rs);
-        } finally {
-            con.close();
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) cidade = montarCidade(rs);
+            }
         }
         return cidade;
     }
 
     public Cidade buscarPorNomeSigla(Connection con, String nomeCidade, String siglaUF) throws Exception {
-        String sql = "SELECT * FROM Cidade WHERE nomeCidade = ? AND siglaUF = ?";
+        String sql = SQL_SELECT_COMPLETO + " WHERE UPPER(c.nomeCidade) = UPPER(?) AND UPPER(c.siglaUF) = UPPER(?)";
         try (PreparedStatement stmt = con.prepareStatement(sql)) {
             stmt.setString(1, nomeCidade);
             stmt.setString(2, siglaUF);
-            ResultSet rs = stmt.executeQuery();
-            if (rs.next()) {
-                Cidade c = new Cidade();
-                c.setIdCidade(rs.getInt("idCidade"));
-                c.setNomeCidade(rs.getString("nomeCidade"));
-                return c;
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) return montarCidade(rs);
             }
         }
         return null;
-    }
-
-    public List<Cidade> buscarTodos() throws Exception {
-        Connection con = ConexaoBD.getConexao();
-        String sql = SQL_SELECT_COMPLETO + "ORDER BY c.nomeCidade";
-        List<Cidade> lista = new ArrayList<>();
-
-        try (PreparedStatement stmt = con.prepareStatement(sql)) {
-            ResultSet rs = stmt.executeQuery();
-            while (rs.next()) lista.add(montarCidade(rs));
-        } finally {
-            con.close();
-        }
-        return lista;
     }
 }

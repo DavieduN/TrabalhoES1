@@ -22,7 +22,7 @@ public class ObterEnderecoPorCepServlet extends HttpServlet {
             }
             String cep = pathInfo.substring(1);
             UCEnderecoGeralServicos servicos = new UCEnderecoGeralServicos();
-            out.print(new JSONArray(servicos.obterEnderecoPorCEP(cep)));
+            out.print(new JSONArray(servicos.obterEnderecoPorCep(cep)));
         } catch (Exception e) {
             resp.setStatus(500);
             out.print("{\"erro\": \"" + e.getMessage() + "\"}");

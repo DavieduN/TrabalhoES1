@@ -14,11 +14,12 @@
     <packaging>war</packaging>
 
     <build>
+        <finalName>endereco</finalName>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-war-plugin</artifactId>
-                <version>3.4.0</version>
+                <version>3.3.2</version>
                 <configuration>
                     <attachClasses>true</attachClasses>
                 </configuration>
@@ -51,6 +52,5 @@
             <version>9.1.0</version>
             <scope>provided</scope>
         </dependency>
-        
-        </dependencies>
+    </dependencies>
 </project>

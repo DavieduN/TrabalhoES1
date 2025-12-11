@@ -1,6 +1,5 @@
 package unioeste.geral.endereco.dao;
 
-import unioeste.apoio.bd.ConexaoBD;
 import unioeste.geral.endereco.bo.TipoLogradouro;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -10,69 +9,49 @@ import java.util.List;
 
 public class TipoLogradouroDAO {
 
-    public void inserir(Connection con, TipoLogradouro tipo) throws Exception {
-        String sql = "INSERT INTO TipoLogradouro (nomeTipoLogradouro) VALUES (?) RETURNING idTipoLogradouro";
-
-        try (PreparedStatement stmt = con.prepareStatement(sql)) {
-            stmt.setString(1, tipo.getNomeTipoLogradouro());
-
-            ResultSet rs = stmt.executeQuery();
-            if (rs.next()) {
-                tipo.setIdTipoLogradouro(rs.getInt("idTipoLogradouro"));
-            }
-        }
-    }
-
-    public TipoLogradouro buscarPorId(int id) throws Exception {
-        Connection con = ConexaoBD.getConexao();
-        String sql = "SELECT * FROM TipoLogradouro WHERE idTipoLogradouro = ?";
-        TipoLogradouro tipo = null;
-
-        try (PreparedStatement stmt = con.prepareStatement(sql)) {
-            stmt.setInt(1, id);
-            ResultSet rs = stmt.executeQuery();
-
-            if (rs.next()) {
-                tipo = new TipoLogradouro();
-                tipo.setIdTipoLogradouro(rs.getInt("idTipoLogradouro"));
-                tipo.setNomeTipoLogradouro(rs.getString("nomeTipoLogradouro"));
-            }
-        } finally {
-            con.close();
-        }
+    private TipoLogradouro montarTipoLogradouro(ResultSet rs) throws Exception{
+        TipoLogradouro tipo = new TipoLogradouro();
+        tipo.setIdTipoLogradouro(rs.getInt("idTipoLogradouro"));
+        tipo.setNomeTipoLogradouro(rs.getString("nomeTipoLogradouro"));
         return tipo;
     }
 
-    public TipoLogradouro buscarPorNome(Connection con, String nome) throws Exception {
-        String sql = "SELECT * FROM TipoLogradouro WHERE nomeTipoLogradouro = ?";
+    public TipoLogradouro buscarPorId(Connection con, int id) throws Exception {
+        String sql = "SELECT * FROM TipoLogradouro WHERE idTipoLogradouro = ?";
+
         try (PreparedStatement stmt = con.prepareStatement(sql)) {
-            stmt.setString(1, nome);
-            ResultSet rs = stmt.executeQuery();
-            if (rs.next()) {
-                TipoLogradouro t = new TipoLogradouro();
-                t.setIdTipoLogradouro(rs.getInt("idTipoLogradouro"));
-                t.setNomeTipoLogradouro(rs.getString("nomeTipoLogradouro"));
-                return t;
+            stmt.setInt(1, id);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return montarTipoLogradouro(rs);
+                }
             }
         }
         return null;
     }
 
-    public List<TipoLogradouro> buscarTodos() throws Exception {
-        Connection con = ConexaoBD.getConexao();
-        String sql = "SELECT * FROM TipoLogradouro";
+    public TipoLogradouro buscarPorNome(Connection con, String nome) throws Exception {
+        String sql = "SELECT * FROM TipoLogradouro WHERE UPPER(nomeTipoLogradouro) = UPPER(?)";
+
+        try (PreparedStatement stmt = con.prepareStatement(sql)) {
+            stmt.setString(1, nome);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return montarTipoLogradouro(rs);
+                }
+            }
+        }
+        return null;
+    }
+
+    public List<TipoLogradouro> buscarTodos(Connection con) throws Exception {
+        String sql = "SELECT * FROM TipoLogradouro ORDER BY nomeTipoLogradouro";
         List<TipoLogradouro> lista = new ArrayList<>();
 
         try (PreparedStatement stmt = con.prepareStatement(sql)) {
-            ResultSet rs = stmt.executeQuery();
-            while (rs.next()) {
-                TipoLogradouro tipo = new TipoLogradouro();
-                tipo.setIdTipoLogradouro(rs.getInt("idTipoLogradouro"));
-                tipo.setNomeTipoLogradouro(rs.getString("nomeTipoLogradouro"));
-                lista.add(tipo);
+            try (ResultSet rs = stmt.executeQuery()){
+                while (rs.next()) lista.add(montarTipoLogradouro(rs));
             }
-        } finally {
-            con.close();
         }
         return lista;
     }

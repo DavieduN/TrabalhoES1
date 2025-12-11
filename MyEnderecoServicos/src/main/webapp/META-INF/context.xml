@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Context>
+    <Resource name="jdbc/endereco"
+              auth="Container"
+              type="javax.sql.DataSource"
+              maxTotal="20"
+              maxIdle="10"
+              maxWaitMillis="10000"
+              username="postgres"
+              password="senha_secreta"
+              driverClassName="org.postgresql.Driver"
+              url="jdbc:postgresql://db:5432/trabalho_es"/>
+</Context>

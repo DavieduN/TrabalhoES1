@@ -1,3 +1,10 @@
+DROP TABLE IF EXISTS Endereco CASCADE;
+DROP TABLE IF EXISTS Logradouro CASCADE;
+DROP TABLE IF EXISTS TipoLogradouro CASCADE;
+DROP TABLE IF EXISTS Bairro CASCADE;
+DROP TABLE IF EXISTS Cidade CASCADE;
+DROP TABLE IF EXISTS UnidadeFederativa CASCADE;
+
 -- 1. Unidade Federativa
 CREATE TABLE UnidadeFederativa (
     siglaUF CHAR(2) NOT NULL,
@@ -37,7 +44,7 @@ CREATE TABLE Logradouro (
     CONSTRAINT fk_logradouro_tipo FOREIGN KEY (idTipoLogradouro) REFERENCES TipoLogradouro (idTipoLogradouro)
 );
 
--- 6. Endereço
+-- 6. Endereço (Agora representa apenas o Logradouro/CEP base, sem número)
 CREATE TABLE Endereco (
     idEndereco SERIAL NOT NULL,
     cep VARCHAR(9) NOT NULL,
@@ -45,58 +52,51 @@ CREATE TABLE Endereco (
     idBairro INT NOT NULL,
     idLogradouro INT NOT NULL,
     CONSTRAINT pk_endereco PRIMARY KEY (idEndereco),
+    CONSTRAINT uk_endereco_unico UNIQUE (cep, idCidade, idBairro, idLogradouro),
     CONSTRAINT fk_endereco_cidade FOREIGN KEY (idCidade) REFERENCES Cidade (idCidade),
     CONSTRAINT fk_endereco_bairro FOREIGN KEY (idBairro) REFERENCES Bairro (idBairro),
     CONSTRAINT fk_endereco_logradouro FOREIGN KEY (idLogradouro) REFERENCES Logradouro (idLogradouro)
 );
 
--- 7. Endereço Específico
-CREATE TABLE EnderecoEspecifico (
-    idEnderecoEspecifico SERIAL NOT NULL,
-    numero VARCHAR(20) NOT NULL,
-    complemento VARCHAR(50),
-    idEndereco INT NOT NULL,
-    CONSTRAINT pk_enderecoespecifico PRIMARY KEY (idEnderecoEspecifico),
-    CONSTRAINT fk_especifico_generico FOREIGN KEY (idEndereco) REFERENCES Endereco (idEndereco)
-);
+-- Carga Inicial de Dados Auxiliares
 
-INSERT INTO UnidadeFederativa (siglaUF, nomeUF) VALUES 
-('AC', 'Acre'),
-('AL', 'Alagoas'),
-('AP', 'Amapá'),
-('AM', 'Amazonas'),
-('BA', 'Bahia'),
-('CE', 'Ceará'),
-('DF', 'Distrito Federal'),
-('ES', 'Espírito Santo'),
-('GO', 'Goiás'),
-('MA', 'Maranhão'),
-('MT', 'Mato Grosso'),
-('MS', 'Mato Grosso do Sul'),
-('MG', 'Minas Gerais'),
-('PA', 'Pará'),
-('PB', 'Paraíba'),
-('PR', 'Paraná'),
-('PE', 'Pernambuco'),
-('PI', 'Piauí'),
-('RJ', 'Rio de Janeiro'),
-('RN', 'Rio Grande do Norte'),
-('RS', 'Rio Grande do Sul'),
-('RO', 'Rondônia'),
-('RR', 'Roraima'),
-('SC', 'Santa Catarina'),
-('SP', 'São Paulo'),
-('SE', 'Sergipe'),
-('TO', 'Tocantins');
+INSERT INTO UnidadeFederativa (siglaUF, nomeUF) VALUES
+    ('AC', 'Acre'),
+    ('AL', 'Alagoas'),
+    ('AP', 'Amapá'),
+    ('AM', 'Amazonas'),
+    ('BA', 'Bahia'),
+    ('CE', 'Ceará'),
+    ('DF', 'Distrito Federal'),
+    ('ES', 'Espírito Santo'),
+    ('GO', 'Goiás'),
+    ('MA', 'Maranhão'),
+    ('MT', 'Mato Grosso'),
+    ('MS', 'Mato Grosso do Sul'),
+    ('MG', 'Minas Gerais'),
+    ('PA', 'Pará'),
+    ('PB', 'Paraíba'),
+    ('PR', 'Paraná'),
+    ('PE', 'Pernambuco'),
+    ('PI', 'Piauí'),
+    ('RJ', 'Rio de Janeiro'),
+    ('RN', 'Rio Grande do Norte'),
+    ('RS', 'Rio Grande do Sul'),
+    ('RO', 'Rondônia'),
+    ('RR', 'Roraima'),
+    ('SC', 'Santa Catarina'),
+    ('SP', 'São Paulo'),
+    ('SE', 'Sergipe'),
+    ('TO', 'Tocantins');
 
-INSERT INTO TipoLogradouro (nomeTipoLogradouro) VALUES 
-('Rua'),
-('Avenida'),
-('Travessa'),
-('Alameda'),
-('Rodovia'),
-('Praça'),
-('Estrada'),
-('Viela'),
-('Largo'),
-('Beco');
+INSERT INTO TipoLogradouro (nomeTipoLogradouro) VALUES
+    ('Rua'),
+    ('Avenida'),
+    ('Travessa'),
+    ('Alameda'),
+    ('Rodovia'),
+    ('Praça'),
+    ('Estrada'),
+    ('Viela'),
+    ('Largo'),
+    ('Beco');

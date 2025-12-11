@@ -17,41 +17,47 @@ services:
       retries: 5
 
   app:
-    build: .
+    image: tomcat:10.1-jdk17
     container_name: trabalho_tomcat
     depends_on:
       db:
         condition: service_healthy
     ports:
       - "8080:8080"
+      - "5005:5005"
+    volumes:
+      - ./MyEnderecoServicos/target/endereco.war:/usr/local/tomcat/webapps/endereco.war
     environment:
-      DB_URL: jdbc:postgresql://db:5432/trabalho_es
-      DB_USER: postgres
-      DB_PASS: senha_secreta
+      JAVA_OPTS: "-Xmx512m -Xms256m"
 
   testes:
-    build: 
-      context: .
-      target: build
+    image: maven:3.8.5-openjdk-17
     container_name: trabalho_testes
+    working_dir: /app
+    volumes:
+      - .:/app
+      - ~/.m2:/root/.m2
+    command: mvn test -DfailIfNoTests=false
     depends_on:
       db:
         condition: service_healthy
-    environment:
-      DB_URL: jdbc:postgresql://db:5432/trabalho_es
-      DB_USER: postgres
-      DB_PASS: senha_secreta
-    command: mvn test
 
   frontend:
-    build: ./Frontend 
-    container_name: trabalho_frontend
+    build: ./Frontend
+    container_name: trabalho_frontend_endereco
     ports:
       - "5173:5173"
     volumes:
       - ./Frontend:/app
       - /app/node_modules
     environment:
-      - VITE_API_URL=http://app:8080
+      - VITE_API_URL=http://app:8080/endereco
     depends_on:
       - app
+
+  # FUTURO: frontend-estudo-a
+  # frontend-estudo-a:
+  #   build: ./FrontendEstudoA
+  #   ports: ["5174:5173"]
+  #   environment:
+  #     - VITE_API_URL=http://app:8080/estudoA

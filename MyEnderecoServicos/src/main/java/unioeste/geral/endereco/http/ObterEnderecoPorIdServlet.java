@@ -1,7 +1,7 @@
 package unioeste.geral.endereco.http;
 
 import org.json.JSONObject;
-import unioeste.geral.endereco.bo.EnderecoEspecifico;
+import unioeste.geral.endereco.bo.Endereco;
 import unioeste.geral.endereco.manager.UCEnderecoGeralServicos;
 
 import jakarta.servlet.annotation.WebServlet;
@@ -23,12 +23,12 @@ public class ObterEnderecoPorIdServlet extends HttpServlet {
 
         try {
             JSONObject json = new JSONObject(sb.toString());
-            EnderecoEspecifico filtro = new EnderecoEspecifico();
-            if (json.has("idEnderecoEspecifico")) {
-                filtro.setIdEnderecoEspecifico(json.getInt("idEnderecoEspecifico"));
+            Endereco filtro = new Endereco();
+            if (json.has("idEndereco")) {
+                filtro.setIdEndereco(json.getInt("idEndereco"));
             }
             UCEnderecoGeralServicos servicos = new UCEnderecoGeralServicos();
-            EnderecoEspecifico resultado = servicos.obterEnderecoPorID(filtro);
+            Endereco resultado = servicos.obterEnderecoPorID(filtro);
 
             out.print(new JSONObject(resultado));
 

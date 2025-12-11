@@ -1,55 +1,56 @@
 package unioeste.apoio.bd;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Properties;
+import javax.naming.Context;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
+import javax.sql.DataSource;
 
 public class ConexaoBD {
 
-    public static Connection getConexao() throws Exception {
-        Properties props = new Properties();
-        try (InputStream entrada = ConexaoBD.class.getClassLoader().getResourceAsStream("db.properties")) {
-            if (entrada == null) {
-                throw new Exception("O arquivo 'db.properties' não foi encontrado.");
-            }
-            props.load(entrada);
-        } catch (IOException e) {
-            throw new Exception("Erro ao ler arquivo de configuração: " + e.getMessage());
-        }
-
-        String url = System.getenv("DB_URL");
-        if (url == null) url = props.getProperty("db.url");
-
-        String user = System.getenv("DB_USER");
-        if (user == null) user = props.getProperty("db.user");
-
-        String pass = System.getenv("DB_PASS");
-        if (pass == null) pass = props.getProperty("db.password");
-        
-        String driver = props.getProperty("db.driver"); 
-        if (driver == null) driver = "org.postgresql.Driver";
-
+    public Connection getConexao() throws Exception {
+        // esse try catch é só pros testes rodarem sem precisar ficar configurando separado
         try {
-            Class.forName(driver);
-            return DriverManager.getConnection(url, user, pass);
-        } catch (ClassNotFoundException e) {
-            throw new Exception("Driver do banco não encontrado (" + driver + "): " + e.getMessage());
-        } catch (SQLException e) {
-            throw new Exception("Erro ao conectar no Postgres: " + e.getMessage());
+            Context initContext = new InitialContext();
+            Context envContext = (Context) initContext.lookup("java:/comp/env");
+            DataSource ds = (DataSource) envContext.lookup("jdbc/endereco");
+            return ds.getConnection();
+
+        } catch (NamingException e) {
+            try {
+                Class.forName("org.postgresql.Driver");
+                // se rodar fora do docker mudar para localhost
+                String url = "jdbc:postgresql://db:5432/trabalho_es";
+                String user = "postgres";
+                String pass = "senha_secreta";
+
+                return DriverManager.getConnection(url, user, pass);
+
+            } catch (Exception ex) {
+                throw new Exception("FATAL: Não foi possível obter conexão via JNDI (Tomcat) nem JDBC Direto (Testes). " +
+                        "Verifique se o banco está acessível em 'db:5432'. Erro original: " + e.getMessage());
+            }
         }
     }
 
-    public static void main(String[] args) {
+    public static void fecharConexao(Connection conn, PreparedStatement stmt, ResultSet rs) {
         try {
-            Connection con = getConexao();
-            System.out.println("Conectado com sucesso.");
-            con.close();
+            if (rs != null) rs.close();
         } catch (Exception e) {
-            System.err.println("Erro:");
-            e.printStackTrace();
+        }
+
+        try {
+            if (stmt != null) stmt.close();
+        } catch (Exception e) {
+        }
+
+        try {
+            if (conn != null) conn.close();
+        } catch (Exception e) {
         }
     }
 }

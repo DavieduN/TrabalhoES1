@@ -1,24 +1,25 @@
 package unioeste.geral.endereco.dao;
 
-import unioeste.apoio.bd.ConexaoBD;
 import unioeste.geral.endereco.bo.*;
-
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.util.ArrayList;
+import java.util.List;
 
 public class EnderecoDAO {
+
     private final String SQL_SELECT_COMPLETO =
             "SELECT e.idEndereco, e.cep, " +
-            "       c.idCidade, c.nomeCidade, c.siglaUF, u.nomeUF, " +
-            "       b.idBairro, b.nomeBairro, " +
-            "       l.idLogradouro, l.nomeLogradouro, l.idTipoLogradouro, t.nomeTipoLogradouro " +
-            "FROM Endereco e " +
-            "INNER JOIN Cidade c ON e.idCidade = c.idCidade " +
-            "INNER JOIN UnidadeFederativa u ON c.siglaUF = u.siglaUF " +
-            "INNER JOIN Bairro b ON e.idBairro = b.idBairro " +
-            "INNER JOIN Logradouro l ON e.idLogradouro = l.idLogradouro " +
-            "INNER JOIN TipoLogradouro t ON l.idTipoLogradouro = t.idTipoLogradouro ";
+                    "       c.idCidade, c.nomeCidade, c.siglaUF, u.nomeUF, " +
+                    "       b.idBairro, b.nomeBairro, " +
+                    "       l.idLogradouro, l.nomeLogradouro, l.idTipoLogradouro, t.nomeTipoLogradouro " +
+                    "FROM Endereco e " +
+                    "INNER JOIN Cidade c ON e.idCidade = c.idCidade " +
+                    "INNER JOIN UnidadeFederativa u ON c.siglaUF = u.siglaUF " +
+                    "INNER JOIN Bairro b ON e.idBairro = b.idBairro " +
+                    "INNER JOIN Logradouro l ON e.idLogradouro = l.idLogradouro " +
+                    "INNER JOIN TipoLogradouro t ON l.idTipoLogradouro = t.idTipoLogradouro ";
 
     private Endereco montarEndereco(ResultSet rs) throws Exception {
         Endereco endereco = new Endereco();
@@ -32,7 +33,6 @@ public class EnderecoDAO {
         UnidadeFederativa uf = new UnidadeFederativa();
         uf.setSiglaUF(rs.getString("siglaUF"));
         uf.setNomeUF(rs.getString("nomeUF"));
-
         c.setUnidadeFederativa(uf);
         endereco.setCidade(c);
 
@@ -48,7 +48,6 @@ public class EnderecoDAO {
         TipoLogradouro t = new TipoLogradouro();
         t.setIdTipoLogradouro(rs.getInt("idTipoLogradouro"));
         t.setNomeTipoLogradouro(rs.getString("nomeTipoLogradouro"));
-
         l.setTipoLogradouro(t);
         endereco.setLogradouro(l);
 
@@ -65,36 +64,51 @@ public class EnderecoDAO {
             stmt.setInt(4, endereco.getLogradouro().getIdLogradouro());
 
             ResultSet rs = stmt.executeQuery();
-            if (rs.next()) endereco.setIdEndereco(rs.getInt("idEndereco"));
+            if (rs.next()) {
+                endereco.setIdEndereco(rs.getInt("idEndereco"));
+            }
         }
     }
 
-    public Endereco buscarPorId(int id) throws Exception {
-        Connection con = ConexaoBD.getConexao();
+    public Endereco buscarPorId(Connection con, int id) throws Exception {
         String sql = SQL_SELECT_COMPLETO + "WHERE e.idEndereco = ?";
-        Endereco endereco = null;
+
         try (PreparedStatement stmt = con.prepareStatement(sql)) {
             stmt.setInt(1, id);
-            ResultSet rs = stmt.executeQuery();
-            if (rs.next()) endereco = montarEndereco(rs);
-        } finally {
-            con.close();
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) return montarEndereco(rs);
+            }
         }
-        return endereco;
+        return null;
     }
 
-    public Endereco buscarPorCep(String cep) throws Exception {
-        Connection con = ConexaoBD.getConexao();
+    public List<Endereco> buscarPorCep(Connection con, String cep) throws Exception {
         String sql = SQL_SELECT_COMPLETO + "WHERE e.cep = ?";
-        Endereco endereco = null;
+        List<Endereco> enderecos = new ArrayList<>();
+
         try (PreparedStatement stmt = con.prepareStatement(sql)) {
             stmt.setString(1, cep);
-            ResultSet rs = stmt.executeQuery();
-            if (rs.next()) endereco = montarEndereco(rs);
-        } finally {
-            con.close();
+            try (ResultSet rs = stmt.executeQuery()){
+                while (rs.next()) enderecos.add(montarEndereco(rs));
+            }
         }
-        return endereco;
+        return enderecos;
     }
 
+    public Endereco buscarPorCombinacaoUnica(Connection con, Endereco endereco) throws Exception {
+        String sql = SQL_SELECT_COMPLETO +
+                "WHERE e.cep = ? AND e.idCidade = ? AND e.idBairro = ? AND e.idLogradouro = ?";
+
+        try (PreparedStatement stmt = con.prepareStatement(sql)) {
+            stmt.setString(1, endereco.getCep());
+            stmt.setInt(2, endereco.getCidade().getIdCidade());
+            stmt.setInt(3, endereco.getBairro().getIdBairro());
+            stmt.setInt(4, endereco.getLogradouro().getIdLogradouro());
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) return montarEndereco(rs);
+            }
+        }
+        return null;
+    }
 }

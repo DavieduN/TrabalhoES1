@@ -29,7 +29,7 @@ public class CadastrarEnderecoServlet extends HttpServlet {
 
         try {
             JSONObject json = new JSONObject(sb.toString());
-            EnderecoEspecifico novoEnd = converterJsonParaObjeto(json);
+            Endereco novoEnd = converterJsonParaObjeto(json);
             UCEnderecoGeralServicos servicos = new UCEnderecoGeralServicos();
             servicos.cadastrarEndereco(novoEnd);
             out.print(new JSONObject(novoEnd));
@@ -41,55 +41,50 @@ public class CadastrarEnderecoServlet extends HttpServlet {
         }
     }
 
-    private EnderecoEspecifico converterJsonParaObjeto(JSONObject json) {
-        EnderecoEspecifico ee = new EnderecoEspecifico();
-        ee.setNumero(json.optString("numero"));
-        ee.setComplemento(json.optString("complemento"));
+    private Endereco converterJsonParaObjeto(JSONObject json) {
+        Endereco e = new Endereco();
+        e.setCep(json.optString("cep"));
 
-        if (json.has("endereco")) {
-            JSONObject jsonEnd = json.getJSONObject("endereco");
-            Endereco e = new Endereco();
-            e.setCep(jsonEnd.optString("cep"));
-            if (jsonEnd.has("idEndereco")) e.setIdEndereco(jsonEnd.getInt("idEndereco"));
-            if (jsonEnd.has("cidade")) {
-                JSONObject jsonCid = jsonEnd.getJSONObject("cidade");
-                Cidade c = new Cidade();
-                if (jsonCid.has("idCidade")) c.setIdCidade(jsonCid.getInt("idCidade"));
-                c.setNomeCidade(jsonCid.optString("nomeCidade"));
-                if (jsonCid.has("unidadeFederativa")) {
-                    JSONObject jsonUf = jsonCid.getJSONObject("unidadeFederativa");
-                    UnidadeFederativa uf = new UnidadeFederativa();
-                    uf.setSiglaUF(jsonUf.optString("siglaUF"));
-                    c.setUnidadeFederativa(uf);
-                }
-                e.setCidade(c);
+        if (json.has("idEndereco")) e.setIdEndereco(json.getInt("idEndereco"));
+
+        if (json.has("cidade")) {
+            JSONObject jsonCid = json.getJSONObject("cidade");
+            Cidade c = new Cidade();
+            if (jsonCid.has("idCidade")) c.setIdCidade(jsonCid.getInt("idCidade"));
+            c.setNomeCidade(jsonCid.optString("nomeCidade"));
+            if (jsonCid.has("unidadeFederativa")) {
+                JSONObject jsonUf = jsonCid.getJSONObject("unidadeFederativa");
+                UnidadeFederativa uf = new UnidadeFederativa();
+                uf.setSiglaUF(jsonUf.optString("siglaUF"));
+                c.setUnidadeFederativa(uf);
             }
-
-            if (jsonEnd.has("bairro")) {
-                JSONObject jsonBairro = jsonEnd.getJSONObject("bairro");
-                Bairro b = new Bairro();
-                if (jsonBairro.has("idBairro")) b.setIdBairro(jsonBairro.getInt("idBairro"));
-                b.setNomeBairro(jsonBairro.optString("nomeBairro"));
-                e.setBairro(b);
-            }
-
-            if (jsonEnd.has("logradouro")) {
-                JSONObject jsonLog = jsonEnd.getJSONObject("logradouro");
-                Logradouro l = new Logradouro();
-                if (jsonLog.has("idLogradouro")) l.setIdLogradouro(jsonLog.getInt("idLogradouro"));
-                l.setNomeLogradouro(jsonLog.optString("nomeLogradouro"));
-
-                if (jsonLog.has("tipoLogradouro")) {
-                    JSONObject jsonTipo = jsonLog.getJSONObject("tipoLogradouro");
-                    TipoLogradouro t = new TipoLogradouro();
-                    if (jsonTipo.has("idTipoLogradouro")) t.setIdTipoLogradouro(jsonTipo.getInt("idTipoLogradouro"));
-                    t.setNomeTipoLogradouro(jsonTipo.optString("nomeTipoLogradouro"));
-                    l.setTipoLogradouro(t);
-                }
-                e.setLogradouro(l);
-            }
-            ee.setEndereco(e);
+            e.setCidade(c);
         }
-        return ee;
+
+        if (json.has("bairro")) {
+            JSONObject jsonBairro = json.getJSONObject("bairro");
+            Bairro b = new Bairro();
+            if (jsonBairro.has("idBairro")) b.setIdBairro(jsonBairro.getInt("idBairro"));
+            b.setNomeBairro(jsonBairro.optString("nomeBairro"));
+            e.setBairro(b);
+        }
+
+        if (json.has("logradouro")) {
+            JSONObject jsonLog = json.getJSONObject("logradouro");
+            Logradouro l = new Logradouro();
+            if (jsonLog.has("idLogradouro")) l.setIdLogradouro(jsonLog.getInt("idLogradouro"));
+            l.setNomeLogradouro(jsonLog.optString("nomeLogradouro"));
+
+            if (jsonLog.has("tipoLogradouro")) {
+                JSONObject jsonTipo = jsonLog.getJSONObject("tipoLogradouro");
+                TipoLogradouro t = new TipoLogradouro();
+                if (jsonTipo.has("idTipoLogradouro")) t.setIdTipoLogradouro(jsonTipo.getInt("idTipoLogradouro"));
+                t.setNomeTipoLogradouro(jsonTipo.optString("nomeTipoLogradouro"));
+                l.setTipoLogradouro(t);
+            }
+            e.setLogradouro(l);
+        }
+
+        return e;
     }
 }

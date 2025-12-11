@@ -1,7 +1,7 @@
 package unioeste.geral.endereco.http;
 
 import org.json.JSONObject;
-import unioeste.geral.endereco.bo.EnderecoEspecifico;
+import unioeste.geral.endereco.bo.Endereco;
 import unioeste.geral.endereco.manager.UCEnderecoGeralServicos;
 
 import jakarta.servlet.annotation.WebServlet;
@@ -24,7 +24,7 @@ public class ObterEnderecoExternoServlet extends HttpServlet {
             String cep = pathInfo.substring(1);
 
             UCEnderecoGeralServicos servicos = new UCEnderecoGeralServicos();
-            EnderecoEspecifico end = servicos.obterEnderecoExterno(cep);
+            Endereco end = servicos.obterEnderecoExterno(cep);
 
             out.print(new JSONObject(end));
 

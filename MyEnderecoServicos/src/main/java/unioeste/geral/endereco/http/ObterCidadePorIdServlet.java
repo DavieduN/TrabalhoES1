@@ -29,7 +29,7 @@ public class ObterCidadePorIdServlet extends HttpServlet {
                 cidadeFiltro.setIdCidade(json.getInt("idCidade"));
             }
             UCEnderecoGeralServicos servicos = new UCEnderecoGeralServicos();
-            Cidade encontrada = servicos.obterCidade(cidadeFiltro);
+            Cidade encontrada = servicos.obterCidadePorID(cidadeFiltro);
             out.print(new JSONObject(encontrada));
 
         } catch (Exception e) {
