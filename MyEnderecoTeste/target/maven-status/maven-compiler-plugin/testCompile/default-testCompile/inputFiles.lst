@@ -1,0 +1,8 @@
+/app/MyEnderecoTeste/src/test/java/unioeste/teste/funcionalidades/Teste02_CadastroEPopulacao.java
+/app/MyEnderecoTeste/src/test/java/unioeste/teste/funcionalidades/Teste03_Listagens.java
+/app/MyEnderecoTeste/src/test/java/unioeste/teste/funcionalidades/Teste05_BuscaPorCep.java
+/app/MyEnderecoTeste/src/test/java/unioeste/teste/SuiteGeral.java
+/app/MyEnderecoTeste/src/test/java/unioeste/teste/utils/ContextoTestes.java
+/app/MyEnderecoTeste/src/test/java/unioeste/teste/funcionalidades/Teste01_IntegracaoExterna.java
+/app/MyEnderecoTeste/src/test/java/unioeste/teste/unitarios/TesteTextoUtil.java
+/app/MyEnderecoTeste/src/test/java/unioeste/teste/funcionalidades/Teste04_BuscaPorId.java

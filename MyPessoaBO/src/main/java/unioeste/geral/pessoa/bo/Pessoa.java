@@ -1,6 +1,6 @@
 package unioeste.geral.pessoa.bo;
 
-import unioeste.geral.endereco.bo.EnderecoEspecifico;
+import unioeste.geral.endereco.bo.Endereco;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -10,14 +10,16 @@ public abstract class Pessoa implements Serializable {
 
     protected int idPessoa;
     protected String nome;
-    protected String nomeSocial;
 
-    protected EnderecoEspecifico endereco;
+    protected Endereco endereco;
+    protected String numero;
+    protected String complemento;
+
     protected List<Telefone> telefones;
     protected List<Email> emails;
 
     public Pessoa() {
-        this.endereco = new EnderecoEspecifico();
+        this.endereco = new Endereco();
         this.telefones = new ArrayList<>();
         this.emails = new ArrayList<>();
     }
@@ -28,11 +30,14 @@ public abstract class Pessoa implements Serializable {
     public String getNome() { return nome; }
     public void setNome(String nome) { this.nome = nome; }
 
-    public String getNomeSocial() { return nomeSocial; }
-    public void setNomeSocial(String nomeSocial) { this.nomeSocial = nomeSocial; }
+    public Endereco getEndereco() { return endereco; }
+    public void setEndereco(Endereco endereco) { this.endereco = endereco; }
 
-    public EnderecoEspecifico getEndereco() { return endereco; }
-    public void setEndereco(EnderecoEspecifico endereco) { this.endereco = endereco; }
+    public String getNumero() { return numero; }
+    public void setNumero(String numero) { this.numero = numero; }
+
+    public String getComplemento() { return complemento; }
+    public void setComplemento(String complemento) { this.complemento = complemento; }
 
     public List<Telefone> getTelefones() { return telefones; }
     public void setTelefones(List<Telefone> telefones) { this.telefones = telefones; }

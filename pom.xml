@@ -14,6 +14,7 @@
         <module>MyEnderecoBO</module>
         <module>MyEnderecoServicos</module>
         <module>MyEnderecoTeste</module>
+        <module>MyPessoaServicos</module>
     </modules>
 
     <properties>

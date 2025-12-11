@@ -30,59 +30,68 @@ public class UCEnderecoGeralServicos {
         this.conexaoBD = new ConexaoBD();
     }
 
-    // --- Especificados ---
+    // --- Helper ---
 
-    public Endereco cadastrarEndereco(Endereco endereco) throws Exception {
+    private void validarEstruturaEndereco(Endereco endereco) throws EnderecoException {
         if (endereco == null) {
             throw new EnderecoException("O objeto endereço não pode ser nulo para cadastro.");
         }
-        if (endereco.getCidade() == null) {
-            throw new EnderecoException("Objeto Cidade é obrigatório.");
-        }
-        if (endereco.getCidade().getUnidadeFederativa() == null) {
-            throw new EnderecoException("Objeto UF dentro da Cidade é obrigatório.");
-        }
-        if (endereco.getBairro() == null) {
-            throw new EnderecoException("Objeto Bairro é obrigatório.");
-        }
-        if (endereco.getLogradouro() == null) {
-            throw new EnderecoException("Objeto Logradouro é obrigatório.");
-        }
-        if (endereco.getLogradouro().getTipoLogradouro() == null) {
-            throw new EnderecoException("Objeto Tipo de Logradouro é obrigatório.");
-        }
+        if (endereco.getCidade() == null) throw new EnderecoException("Objeto Cidade é obrigatório.");
+        if (endereco.getCidade().getUnidadeFederativa() == null) throw new EnderecoException("Objeto UF é obrigatório.");
+        if (endereco.getBairro() == null) throw new EnderecoException("Objeto Bairro é obrigatório.");
+        if (endereco.getLogradouro() == null) throw new EnderecoException("Objeto Logradouro é obrigatório.");
+        if (endereco.getLogradouro().getTipoLogradouro() == null) throw new EnderecoException("Objeto Tipo de Logradouro é obrigatório.");
+    }
+
+    private Endereco orquestrarCadastro(Connection con, Endereco endereco) throws Exception {
+        UnidadeFederativa uf = ufCol.validarExistencia(con, endereco.getCidade().getUnidadeFederativa());
+        endereco.getCidade().setUnidadeFederativa(uf);
+
+        Cidade cidadeSalva = cidadeCol.obterOuCadastrar(con, endereco.getCidade());
+        endereco.setCidade(cidadeSalva);
+
+        Bairro bairroSalvo = bairroCol.obterOuCadastrar(con, endereco.getBairro());
+        endereco.setBairro(bairroSalvo);
+
+        TipoLogradouro tipo = tipoLogradouroCol.validarExistencia(con, endereco.getLogradouro().getTipoLogradouro());
+        endereco.getLogradouro().setTipoLogradouro(tipo);
+
+        Logradouro logSalvo = logradouroCol.obterOuCadastrar(con, endereco.getLogradouro());
+        endereco.setLogradouro(logSalvo);
+
+        return enderecoCol.obterOuCadastrar(con, endereco);
+    }
+
+    // --- Especificados ---
+
+    public Endereco cadastrarEndereco(Connection con, Endereco endereco) throws Exception {
+        validarEstruturaEndereco(endereco);
+        return orquestrarCadastro(con, endereco);
+    }
+
+    public Endereco cadastrarEndereco(Endereco endereco) throws Exception {
+        validarEstruturaEndereco(endereco);
 
         Connection con = null;
         try {
             con = conexaoBD.getConexao();
             con.setAutoCommit(false);
 
-            UnidadeFederativa uf = ufCol.validarExistencia(con, endereco.getCidade().getUnidadeFederativa());
-            endereco.getCidade().setUnidadeFederativa(uf);
-
-            Cidade cidadeSalva = cidadeCol.obterOuCadastrar(con, endereco.getCidade());
-            endereco.setCidade(cidadeSalva);
-
-            Bairro bairroSalvo = bairroCol.obterOuCadastrar(con, endereco.getBairro());
-            endereco.setBairro(bairroSalvo);
-
-            TipoLogradouro tipo = tipoLogradouroCol.validarExistencia(con, endereco.getLogradouro().getTipoLogradouro());
-            endereco.getLogradouro().setTipoLogradouro(tipo);
-
-            Logradouro logSalvo = logradouroCol.obterOuCadastrar(con, endereco.getLogradouro());
-            endereco.setLogradouro(logSalvo);
-
-            Endereco finalEnd = enderecoCol.obterOuCadastrar(con, endereco);
+            Endereco salvo = orquestrarCadastro(con, endereco);
 
             con.commit();
-            return finalEnd;
+            return salvo;
+
         } catch (Exception e) {
-            if (con != null) con.rollback();
+            if (con != null) {
+                try { con.rollback(); } catch (Exception rollbackEx) { rollbackEx.printStackTrace(); }
+            }
             throw e;
         } finally {
             ConexaoBD.fecharConexao(con, null, null);
         }
     }
+
 
     public List<Endereco> obterEnderecoPorCep(String cep) throws Exception {
         Connection con = null;

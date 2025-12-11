@@ -1,0 +1,7 @@
+/app/MyEnderecoBO/src/main/java/unioeste/geral/endereco/bo/Logradouro.java
+/app/MyEnderecoBO/src/main/java/unioeste/geral/endereco/bo/Cidade.java
+/app/MyEnderecoBO/src/main/java/unioeste/geral/endereco/bo/Bairro.java
+/app/MyEnderecoBO/src/main/java/unioeste/geral/endereco/bo/TipoLogradouro.java
+/app/MyEnderecoBO/src/main/java/unioeste/geral/endereco/bo/Endereco.java
+/app/MyEnderecoBO/src/main/java/unioeste/geral/endereco/bo/UnidadeFederativa.java
+/app/MyEnderecoBO/src/main/java/unioeste/geral/endereco/bo/EnderecoEspecifico.java
