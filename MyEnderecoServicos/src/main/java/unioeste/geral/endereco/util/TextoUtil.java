@@ -21,7 +21,6 @@ public class TextoUtil {
             "xxiii", "xxiv", "xxv", "xxvi", "xxvii", "xxviii", "xxix", "xxx", "xxxi"
     );
 
-    // Validações (Mantidas iguais)
     public static void validarNome(String texto, String nomeCampo) throws EnderecoException {
         if (texto == null || texto.trim().isEmpty()) {
             throw new EnderecoException(nomeCampo + " é obrigatório.");
@@ -56,7 +55,6 @@ public class TextoUtil {
         return formatar(texto, false);
     }
 
-    // Lógica Central
     private static String formatar(String texto, boolean forcarPrimeiraMaiuscula) {
         if (texto == null || texto.isEmpty()) return "";
 
@@ -67,24 +65,18 @@ public class TextoUtil {
             String palavra = palavras[i];
 
             if (!palavra.isEmpty()) {
-                // REGRA 1: Romanos -> Sempre MAIÚSCULO
                 if (ROMANOS.contains(palavra)) {
                     sb.append(palavra.toUpperCase());
                 }
-                // REGRA 2: Partículas
-                // Se for a 1ª palavra E forçarmos maiúscula -> Capitaliza (Ex: "Das Nações")
-                // Se for a 1ª palavra E NÃO forçarmos -> Minúscula (Ex: "da Sé")
-                // Se estiver no meio -> Minúscula (Ex: "Foz do Iguaçu")
                 else if (PARTICULAS.contains(palavra)) {
                     if (i == 0 && forcarPrimeiraMaiuscula) {
                         sb.append(capitalizarTermo(palavra));
                     } else if (i == 0) {
-                        sb.append(palavra); // Deixa minúsculo no início (caso logradouro)
+                        sb.append(palavra);
                     } else {
-                        sb.append(palavra); // Deixa minúsculo no meio
+                        sb.append(palavra);
                     }
                 }
-                // REGRA 3: Palavras normais -> Capitaliza
                 else {
                     sb.append(capitalizarTermo(palavra));
                 }

@@ -1,7 +1,7 @@
 package unioeste.teste.funcionalidades;
 
 import org.junit.jupiter.api.*;
-import unioeste.geral.endereco.bo.Endereco; // Correção: Usa Endereco, não EnderecoEspecifico
+import unioeste.geral.endereco.bo.Endereco;
 import unioeste.geral.endereco.manager.UCEnderecoGeralServicos;
 import unioeste.teste.utils.ContextoTestes;
 import unioeste.geral.endereco.exception.EnderecoException;
@@ -24,21 +24,12 @@ public class Teste05_BuscaPorCep {
     public void buscarCepFozMultiplosResultados() {
         System.out.println(">>> [Teste 05.1] Buscando lista CEP Foz (" + ContextoTestes.CEP_FOZ + ")...");
         try {
-            // Retorna List<Endereco>
             List<Endereco> lista = servicos.obterEnderecoPorCep(ContextoTestes.CEP_FOZ);
 
             assertNotNull(lista);
-            // Validamos se encontrou os 3 que cadastramos no Teste02
-            // Nota: Se o obterOuCadastrar funcionou, deve ter retornado o MESMO ID para as 3 inserções,
-            // então na verdade teremos 1 registro único na busca por CEP se for exata,
-            // ou 3 se você inseriu 3 diferentes.
-            // Pela lógica de obterOuCadastrar, se inserimos exatamente o mesmo Endereço 3 vezes, só existe 1 no banco.
-            // Se inserimos com complementos diferentes (que ficam na tabela Pessoa/Externa), o Endereco base é 1 só.
-            // Portanto, esperamos >= 1.
             assertFalse(lista.isEmpty(), "Deveria ter encontrado endereços para Foz");
 
             for (Endereco e : lista) {
-                // Acesso direto, sem .getEndereco()
                 assertEquals(ContextoTestes.EXPECTED_CIDADE_FOZ, e.getCidade().getNomeCidade());
                 assertEquals(ContextoTestes.EXPECTED_UF_FOZ, e.getCidade().getUnidadeFederativa().getSiglaUF());
             }
@@ -56,7 +47,6 @@ public class Teste05_BuscaPorCep {
             List<Endereco> lista = servicos.obterEnderecoPorCep(ContextoTestes.CEP_SAO_PAULO);
             assertFalse(lista.isEmpty());
 
-            // Valida dados do primeiro elemento
             assertEquals(ContextoTestes.EXPECTED_LOG_SP, lista.get(0).getLogradouro().getNomeLogradouro());
 
         } catch (Exception e) {
@@ -79,7 +69,6 @@ public class Teste05_BuscaPorCep {
     @Test
     @DisplayName("Deve validar formato de CEP inválido")
     public void buscarCepInvalido() {
-        // Testando validação do Col (tamanho, nulo)
         assertThrows(EnderecoException.class, () -> servicos.obterEnderecoPorCep("123"), "Deveria lançar erro de formato (tamanho)");
         assertThrows(EnderecoException.class, () -> servicos.obterEnderecoPorCep(null), "Deveria tratar nulo");
         assertThrows(EnderecoException.class, () -> servicos.obterEnderecoPorCep(""), "Deveria tratar vazio");

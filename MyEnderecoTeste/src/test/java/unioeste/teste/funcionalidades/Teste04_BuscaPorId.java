@@ -2,7 +2,7 @@ package unioeste.teste.funcionalidades;
 
 import org.junit.jupiter.api.*;
 import unioeste.geral.endereco.bo.Cidade;
-import unioeste.geral.endereco.bo.Endereco; // Ajustado de EnderecoEspecifico para Endereco
+import unioeste.geral.endereco.bo.Endereco;
 import unioeste.geral.endereco.exception.EnderecoException;
 import unioeste.geral.endereco.manager.UCEnderecoGeralServicos;
 import unioeste.teste.utils.ContextoTestes;
@@ -36,10 +36,8 @@ public class Teste04_BuscaPorId {
                 Endereco res = servicos.obterEnderecoPorID(filtro);
 
                 assertNotNull(res, "Endereço ID " + id + " não encontrado");
-                // Ajustado para Long/Int conforme sua implementação (assumindo cast seguro aqui)
                 assertEquals(id.longValue(), res.getIdEndereco());
 
-                // Valida se os JOINs funcionaram (objetos não nulos)
                 assertNotNull(res.getCidade(), "Cidade não preenchida");
                 assertNotNull(res.getCidade().getNomeCidade(), "Nome da Cidade vazio");
                 assertNotNull(res.getCidade().getUnidadeFederativa().getSiglaUF(), "UF vazia");
@@ -57,7 +55,6 @@ public class Teste04_BuscaPorId {
     @Order(2)
     @DisplayName("Deve lançar exceção ao buscar ID inexistente")
     public void buscarEnderecoIdInvalido() {
-        // O Col lança EnderecoException quando não encontra, não retorna null
         assertThrows(EnderecoException.class, () -> {
             Endereco filtro = criarFiltroEndereco(999999);
             servicos.obterEnderecoPorID(filtro);
@@ -68,7 +65,6 @@ public class Teste04_BuscaPorId {
     @Order(3)
     @DisplayName("Deve lançar exceção ao buscar ID negativo")
     public void buscarEnderecoIdNegativo() {
-        // O Col valida ID <= 0 antes de chamar o DAO
         assertThrows(EnderecoException.class, () -> {
             Endereco filtro = criarFiltroEndereco(-1);
             servicos.obterEnderecoPorID(filtro);
@@ -98,10 +94,9 @@ public class Teste04_BuscaPorId {
         }
     }
 
-    // Método auxiliar ajustado para retornar Endereco
     private Endereco criarFiltroEndereco(int id) {
         Endereco filtro = new Endereco();
-        filtro.setIdEndereco(id); // Setando como long/int
+        filtro.setIdEndereco(id);
         return filtro;
     }
 }
