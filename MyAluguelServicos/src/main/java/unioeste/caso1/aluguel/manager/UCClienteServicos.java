@@ -1,0 +1,31 @@
+package unioeste.caso1.aluguel.manager;
+
+import unioeste.caso1.aluguel.bo.Cliente;
+import unioeste.caso1.aluguel.dao.ClienteDAO;
+import unioeste.geral.pessoa.manager.UCPessoaFisicaServicos;
+
+import java.util.List;
+
+public class UCClienteServicos {
+    private final UCPessoaFisicaServicos<Cliente> pessoaService;
+
+    public UCClienteServicos() {
+        this.pessoaService = new UCPessoaFisicaServicos<>(new ClienteDAO());
+    }
+
+    public Cliente cadastrarCliente(Cliente cliente) throws Exception {
+        return pessoaService.cadastrarPessoa(cliente);
+    }
+
+    public Cliente buscarClientePorId(int id) throws Exception {
+        return pessoaService.buscarPorId(id);
+    }
+
+    public Cliente buscarClientePorCpf(String cpf) throws Exception {
+        return pessoaService.buscarPorCpf(cpf);
+    }
+
+    public List<Cliente> buscarClientesPorNome(String nome) throws Exception {
+        return pessoaService.buscarPorNome(nome);
+    }
+}
