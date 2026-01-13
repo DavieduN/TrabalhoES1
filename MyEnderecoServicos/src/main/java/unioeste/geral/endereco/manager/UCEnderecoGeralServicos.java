@@ -62,6 +62,10 @@ public class UCEnderecoGeralServicos {
         return enderecoCol.obterOuCadastrar(con, endereco);
     }
 
+    public Endereco obterEnderecoPorID(Connection con, Endereco filtro) throws Exception {
+        return enderecoCol.buscarPorID(con, filtro);
+    }
+
     // --- Especificados ---
 
     public Endereco cadastrarEndereco(Connection con, Endereco endereco) throws Exception {

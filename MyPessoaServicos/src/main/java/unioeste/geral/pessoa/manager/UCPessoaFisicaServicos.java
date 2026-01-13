@@ -84,6 +84,22 @@ public class UCPessoaFisicaServicos<T extends PessoaFisica> {
         }
     }
 
+    public T buscarPorId(Connection con, int id) throws Exception {
+        T pessoa = pessoaCol.buscarPorId(con, id);
+
+        if (pessoa != null) {
+            pessoa.setTelefones(telefoneCol.buscarPorPessoa(con, id));
+            pessoa.setEmails(emailCol.buscarPorPessoa(con, id));
+            if (pessoa.getEndereco() != null && pessoa.getEndereco().getIdEndereco() > 0) {
+                Endereco endCompleto = enderecoService.obterEnderecoPorID(con, pessoa.getEndereco());
+                if (endCompleto != null) {
+                    pessoa.setEndereco(endCompleto);
+                }
+            }
+        }
+        return pessoa;
+    }
+
     public T buscarPorCpf(String cpf) throws Exception {
         Connection con = null;
         try {

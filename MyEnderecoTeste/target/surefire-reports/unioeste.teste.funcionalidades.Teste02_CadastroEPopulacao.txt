@@ -1,4 +1,4 @@
 -------------------------------------------------------------------------------
 Test set: unioeste.teste.funcionalidades.Teste02_CadastroEPopulacao
 -------------------------------------------------------------------------------
-Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 2.798 s -- in unioeste.teste.funcionalidades.Teste02_CadastroEPopulacao
+Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 3.140 s -- in unioeste.teste.funcionalidades.Teste02_CadastroEPopulacao

@@ -6,6 +6,9 @@ import unioeste.caso1.aluguel.dao.EmailClienteDAO;
 import unioeste.caso1.aluguel.dao.TelefoneClienteDAO;
 import unioeste.geral.pessoa.manager.UCPessoaFisicaServicos;
 
+import java.sql.Connection;
+import java.util.List;
+
 public class UCClienteServicos {
 
     private final UCPessoaFisicaServicos<Cliente> pessoaService;
@@ -28,5 +31,9 @@ public class UCClienteServicos {
 
     public Cliente buscarClientePorCpf(String cpf) throws Exception {
         return pessoaService.buscarPorCpf(cpf);
+    }
+
+    public Cliente buscarClientePorId(Connection con, int id) throws Exception {
+        return pessoaService.buscarPorId(con, id);
     }
 }

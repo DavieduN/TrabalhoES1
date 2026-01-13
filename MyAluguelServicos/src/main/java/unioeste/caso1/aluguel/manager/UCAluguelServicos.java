@@ -30,16 +30,12 @@ public class UCAluguelServicos {
             con = conexaoBD.getConexao();
             con.setAutoCommit(false);
 
-            Cliente c = clienteService.buscarClientePorId(aluguel.getCliente().getIdPessoa());
-            if (c == null) {
-                throw new Exception("Cliente não encontrado.");
-            }
+            Cliente c = clienteService.buscarClientePorId(con, aluguel.getCliente().getIdPessoa());
+            if (c == null) throw new Exception("Cliente não encontrado.");
             aluguel.setCliente(c);
 
             Equipamento e = equipamentoCol.buscarPorId(con, aluguel.getEquipamento().getIdEquipamento());
-            if (e == null) {
-                throw new Exception("Equipamento não encontrado.");
-            }
+            if (e == null) throw new Exception("Equipamento não encontrado.");
             aluguel.setEquipamento(e);
 
             aluguelCol.registrarAluguel(con, aluguel);
@@ -59,7 +55,14 @@ public class UCAluguelServicos {
         Connection con = null;
         try {
             con = conexaoBD.getConexao();
-            return aluguelCol.consultarAlugueis(con);
+            List<Aluguel> lista = aluguelCol.consultarAlugueis(con);
+
+            for (Aluguel a : lista) {
+                carregarClienteCompleto(con, a);
+                carregarEquipamentoCompleto(con, a);
+            }
+
+            return lista;
         } finally {
             ConexaoBD.fecharConexao(con, null, null);
         }
@@ -69,9 +72,42 @@ public class UCAluguelServicos {
         Connection con = null;
         try {
             con = conexaoBD.getConexao();
-            return aluguelCol.buscarPorNumero(con, nroAluguel);
+            Aluguel aluguel = aluguelCol.buscarPorNumero(con, nroAluguel);
+
+            if (aluguel != null) {
+                carregarClienteCompleto(con, aluguel);
+                carregarEquipamentoCompleto(con, aluguel);
+            }
+
+            return aluguel;
         } finally {
             ConexaoBD.fecharConexao(con, null, null);
+        }
+    }
+
+    private void carregarClienteCompleto(Connection con, Aluguel a) {
+        if (a.getCliente() != null && a.getCliente().getIdPessoa() > 0) {
+            try {
+                Cliente completo = clienteService.buscarClientePorId(con, a.getCliente().getIdPessoa());
+                if (completo != null) {
+                    a.setCliente(completo);
+                }
+            } catch (Exception e) {
+                System.err.println("Erro ao carregar cliente ID " + a.getCliente().getIdPessoa() + ": " + e.getMessage());
+            }
+        }
+    }
+
+    private void carregarEquipamentoCompleto(Connection con, Aluguel a) {
+        if (a.getEquipamento() != null && a.getEquipamento().getIdEquipamento() > 0) {
+            try {
+                Equipamento completo = equipamentoCol.buscarPorId(con, a.getEquipamento().getIdEquipamento());
+                if (completo != null) {
+                    a.setEquipamento(completo);
+                }
+            } catch (Exception e) {
+                System.err.println("Erro ao carregar equipamento: " + e.getMessage());
+            }
         }
     }
 }
