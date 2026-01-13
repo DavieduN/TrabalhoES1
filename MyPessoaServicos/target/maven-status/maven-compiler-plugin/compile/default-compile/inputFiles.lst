@@ -1,0 +1,11 @@
+/app/MyPessoaServicos/src/main/java/unioeste/geral/pessoa/col/DddCol.java
+/app/MyPessoaServicos/src/main/java/unioeste/geral/pessoa/dao/PessoaFisicaDAO.java
+/app/MyPessoaServicos/src/main/java/unioeste/geral/pessoa/col/DdiCol.java
+/app/MyPessoaServicos/src/main/java/unioeste/geral/pessoa/dao/DdiDAO.java
+/app/MyPessoaServicos/src/main/java/unioeste/geral/pessoa/col/EmailCol.java
+/app/MyPessoaServicos/src/main/java/unioeste/geral/pessoa/col/TelefoneCol.java
+/app/MyPessoaServicos/src/main/java/unioeste/geral/pessoa/col/PessoaFisicaCol.java
+/app/MyPessoaServicos/src/main/java/unioeste/geral/pessoa/dao/DddDAO.java
+/app/MyPessoaServicos/src/main/java/unioeste/geral/pessoa/manager/UCPessoaFisicaServicos.java
+/app/MyPessoaServicos/src/main/java/unioeste/geral/pessoa/dao/EmailDAO.java
+/app/MyPessoaServicos/src/main/java/unioeste/geral/pessoa/dao/TelefoneDAO.java

@@ -6,7 +6,7 @@ import unioeste.geral.endereco.manager.UCEnderecoGeralServicos;
 import unioeste.geral.pessoa.bo.PessoaFisica;
 import unioeste.geral.pessoa.bo.Telefone;
 import unioeste.geral.pessoa.col.*;
-import unioeste.geral.pessoa.dao.PessoaFisicaDAO;
+import unioeste.geral.pessoa.dao.*;
 
 import java.sql.Connection;
 import java.util.List;
@@ -18,14 +18,15 @@ public class UCPessoaFisicaServicos<T extends PessoaFisica> {
     private final EmailCol emailCol;
     private final DdiCol ddiCol;
     private final DddCol dddCol;
-
-    private final UCEnderecoGeralServicos enderecoService;
     private final ConexaoBD conexaoBD;
 
-    public UCPessoaFisicaServicos(PessoaFisicaDAO<T> daoEspecifico) {
-        this.pessoaCol = new PessoaFisicaCol<>(daoEspecifico);
-        this.telefoneCol = new TelefoneCol();
-        this.emailCol = new EmailCol();
+    private final UCEnderecoGeralServicos enderecoService;
+
+    public UCPessoaFisicaServicos(PessoaFisicaDAO<T> pessoaDao, TelefoneDAO telefoneDao, EmailDAO emailDao) {
+        this.pessoaCol = new PessoaFisicaCol<>(pessoaDao);
+        this.telefoneCol = new TelefoneCol(telefoneDao);
+        this.emailCol = new EmailCol(emailDao);
+
         this.ddiCol = new DdiCol();
         this.dddCol = new DddCol();
 
@@ -34,8 +35,8 @@ public class UCPessoaFisicaServicos<T extends PessoaFisica> {
     }
 
     public T cadastrarPessoa(T pessoa) throws Exception {
-        if (pessoa == null) throw new Exception("Dados da pessoa não informados.");
-        if (pessoa.getEndereco() == null) throw new Exception("Endereço é obrigatório.");
+        if (pessoa == null) throw new Exception("Pessoa nula.");
+        if (pessoa.getEndereco() == null) throw new Exception("Endereço obrigatório.");
 
         Connection con = null;
         try {
@@ -47,25 +48,21 @@ public class UCPessoaFisicaServicos<T extends PessoaFisica> {
 
             T pessoaSalva = pessoaCol.obterOuCadastrar(con, pessoa);
 
-            if (pessoa.getTelefones() != null && !pessoa.getTelefones().isEmpty()) {
-                for (Telefone t: pessoa.getTelefones()) {
+            if (pessoa.getTelefones() != null) {
+                for (Telefone t : pessoa.getTelefones()) {
                     t.setDdi(ddiCol.validarExistencia(con, t.getDdi()));
                     t.setDdd(dddCol.validarExistencia(con, t.getDdd()));
                 }
                 telefoneCol.salvarTelefones(con, pessoa.getTelefones(), pessoaSalva.getIdPessoa());
             }
 
-            if (pessoa.getEmails() != null && !pessoa.getEmails().isEmpty()) {
-                emailCol.salvarEmails(con, pessoa.getEmails(), pessoaSalva.getIdPessoa());
-            }
+            emailCol.salvarEmails(con, pessoa.getEmails(), pessoaSalva.getIdPessoa());
 
             con.commit();
             return pessoaSalva;
 
         } catch (Exception e) {
-            if (con != null) {
-                try { con.rollback(); } catch (Exception rollbackEx) { rollbackEx.printStackTrace(); }
-            }
+            if (con != null) try { con.rollback(); } catch (Exception ex) {}
             throw e;
         } finally {
             ConexaoBD.fecharConexao(con, null, null);
@@ -82,8 +79,6 @@ public class UCPessoaFisicaServicos<T extends PessoaFisica> {
                 pessoa.setEmails(emailCol.buscarPorPessoa(con, id));
             }
             return pessoa;
-        } catch (Exception e) {
-            throw e;
         } finally {
             ConexaoBD.fecharConexao(con, null, null);
         }
@@ -94,14 +89,11 @@ public class UCPessoaFisicaServicos<T extends PessoaFisica> {
         try {
             con = conexaoBD.getConexao();
             T pessoa = pessoaCol.buscarPorCpf(con, cpf);
-
             if (pessoa != null) {
                 pessoa.setTelefones(telefoneCol.buscarPorPessoa(con, pessoa.getIdPessoa()));
                 pessoa.setEmails(emailCol.buscarPorPessoa(con, pessoa.getIdPessoa()));
             }
             return pessoa;
-        } catch (Exception e) {
-            throw e;
         } finally {
             ConexaoBD.fecharConexao(con, null, null);
         }

@@ -1,5 +1,6 @@
-/home/labiot/IdeaProjects/TrabalhoES1/MyPessoaBO/src/main/java/unioeste/geral/pessoa/bo/DDI.java
-/home/labiot/IdeaProjects/TrabalhoES1/MyPessoaBO/src/main/java/unioeste/geral/pessoa/bo/DDD.java
-/home/labiot/IdeaProjects/TrabalhoES1/MyPessoaBO/src/main/java/unioeste/geral/pessoa/bo/Email.java
-/home/labiot/IdeaProjects/TrabalhoES1/MyPessoaBO/src/main/java/unioeste/geral/pessoa/bo/Telefone.java
-/home/labiot/IdeaProjects/TrabalhoES1/MyPessoaBO/src/main/java/unioeste/geral/pessoa/bo/Pessoa.java
+/app/MyPessoaBO/src/main/java/unioeste/geral/pessoa/bo/Pessoa.java
+/app/MyPessoaBO/src/main/java/unioeste/geral/pessoa/bo/Email.java
+/app/MyPessoaBO/src/main/java/unioeste/geral/pessoa/bo/DDI.java
+/app/MyPessoaBO/src/main/java/unioeste/geral/pessoa/bo/PessoaFisica.java
+/app/MyPessoaBO/src/main/java/unioeste/geral/pessoa/bo/DDD.java
+/app/MyPessoaBO/src/main/java/unioeste/geral/pessoa/bo/Telefone.java

@@ -1,0 +1,5 @@
+unioeste/caso1/aluguel/dao/EmailClienteDAO.class
+unioeste/caso1/aluguel/manager/UCClienteServicos.class
+unioeste/caso1/aluguel/dao/ClienteDAO.class
+unioeste/caso1/aluguel/dao/TelefoneClienteDAO.class
+unioeste/caso1/aluguel/http/CadastrarClienteServlet.class

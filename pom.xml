@@ -14,7 +14,10 @@
         <module>MyEnderecoBO</module>
         <module>MyEnderecoServicos</module>
         <module>MyEnderecoTeste</module>
+        <module>MyPessoaBO</module>
         <module>MyPessoaServicos</module>
+        <module>MyAluguelBO</module>
+        <module>MyAluguelServicos</module>
     </modules>
 
     <properties>

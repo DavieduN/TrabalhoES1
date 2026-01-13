@@ -1,4 +1,4 @@
 -------------------------------------------------------------------------------
 Test set: unioeste.teste.funcionalidades.Teste01_IntegracaoExterna
 -------------------------------------------------------------------------------
-Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 24.77 s -- in unioeste.teste.funcionalidades.Teste01_IntegracaoExterna
+Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 2.615 s -- in unioeste.teste.funcionalidades.Teste01_IntegracaoExterna

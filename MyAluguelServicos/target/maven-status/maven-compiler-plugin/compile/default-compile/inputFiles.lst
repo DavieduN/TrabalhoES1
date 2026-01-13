@@ -1,0 +1,5 @@
+/app/MyAluguelServicos/src/main/java/unioeste/caso1/aluguel/dao/TelefoneClienteDAO.java
+/app/MyAluguelServicos/src/main/java/unioeste/caso1/aluguel/manager/UCClienteServicos.java
+/app/MyAluguelServicos/src/main/java/unioeste/caso1/aluguel/dao/EmailClienteDAO.java
+/app/MyAluguelServicos/src/main/java/unioeste/caso1/aluguel/dao/ClienteDAO.java
+/app/MyAluguelServicos/src/main/java/unioeste/caso1/aluguel/http/CadastrarClienteServlet.java

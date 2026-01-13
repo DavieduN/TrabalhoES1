@@ -1,7 +1,6 @@
-unioeste/geral/endereco/bo/Cidade.class
 unioeste/geral/endereco/bo/UnidadeFederativa.class
 unioeste/geral/endereco/bo/TipoLogradouro.class
 unioeste/geral/endereco/bo/Bairro.class
+unioeste/geral/endereco/bo/Cidade.class
 unioeste/geral/endereco/bo/Logradouro.class
-unioeste/geral/endereco/bo/EnderecoEspecifico.class
 unioeste/geral/endereco/bo/Endereco.class
