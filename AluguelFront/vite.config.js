@@ -13,13 +13,8 @@ export default defineConfig({
       clientPort: 5174, 
     },
     proxy: {
-      '/api': {
-        target: 'http://app:8080/aluguel',
-        changeOrigin: true,
-        secure: false,
-      },
-      '/enderecos': {
-        target: 'http://app:8080/endereco',
+      '/aluguel': {
+        target: 'http://app:8080',
         changeOrigin: true,
         secure: false,
       },

@@ -12,7 +12,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.List;
 
-@WebServlet("/api/aluguel/consultar")
+@WebServlet("/aluguel/consultar")
 public class ConsultarAluguelServlet extends HttpServlet {
 
     @Override

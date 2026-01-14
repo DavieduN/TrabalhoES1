@@ -15,7 +15,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.time.LocalDate;
 
-@WebServlet("/api/aluguel/registrar")
+@WebServlet("/aluguel/registrar")
 public class RegistrarAluguelServlet extends HttpServlet {
 
     @Override

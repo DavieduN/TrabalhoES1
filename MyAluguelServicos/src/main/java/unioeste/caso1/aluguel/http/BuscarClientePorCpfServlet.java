@@ -12,7 +12,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 
-@WebServlet("/api/clientes/buscar-cpf")
+@WebServlet("/clientes/buscar-cpf")
 public class BuscarClientePorCpfServlet extends HttpServlet {
 
     @Override

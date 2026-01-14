@@ -17,7 +17,7 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 
-@WebServlet("/api/clientes/cadastrar")
+@WebServlet("/clientes/cadastrar")
 public class CadastrarClienteServlet extends HttpServlet {
 
     @Override

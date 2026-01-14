@@ -12,7 +12,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 
-@WebServlet("/api/clientes/buscar-id")
+@WebServlet("/clientes/buscar-id")
 public class BuscarClientePorIdServlet extends HttpServlet {
 
     @Override

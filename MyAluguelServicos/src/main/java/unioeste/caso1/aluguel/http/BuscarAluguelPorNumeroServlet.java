@@ -12,7 +12,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 
-@WebServlet("/api/aluguel/buscar-numero")
+@WebServlet("/aluguel/buscar-numero")
 public class BuscarAluguelPorNumeroServlet extends HttpServlet {
 
     @Override

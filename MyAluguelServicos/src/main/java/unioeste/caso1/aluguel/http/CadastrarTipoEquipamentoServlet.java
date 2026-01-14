@@ -12,7 +12,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 
-@WebServlet("/api/tipos-equipamento/cadastrar")
+@WebServlet("/tipos-equipamento/cadastrar")
 public class CadastrarTipoEquipamentoServlet extends HttpServlet {
 
     @Override

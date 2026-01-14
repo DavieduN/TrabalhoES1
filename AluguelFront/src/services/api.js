@@ -7,32 +7,32 @@ const api = axios.create({
 export const SistemaService = {
   // Estoque
   
-  // GET /api/tipos-equipamento
+  // GET /aluguel/tipos-equipamento
   listarTipos: async () => {
-    return (await api.get('/api/tipos-equipamento')).data;
+    return (await api.get('/aluguel/tipos-equipamento')).data;
   },
   
-  // POST /api/tipos-equipamento/cadastrar
+  // POST /aluguel/tipos-equipamento/cadastrar
   cadastrarTipo: async (payload) => {
-    return await api.post('/api/tipos-equipamento/cadastrar', payload);
+    return await api.post('/aluguel/tipos-equipamento/cadastrar', payload);
   },
   
-  // GET /api/equipamentos
+  // GET /aluguel/equipamentos
   listarEquipamentos: async () => {
-    return (await api.get('/api/equipamentos')).data;
+    return (await api.get('/aluguel/equipamentos')).data;
   },
   
-  // POST /api/equipamentos/cadastrar
+  // POST /aluguel/equipamentos/cadastrar
   cadastrarEquipamento: async (payload) => {
-    return await api.post('/api/equipamentos/cadastrar', payload);
+    return await api.post('/aluguel/equipamentos/cadastrar', payload);
   },
 
   // Clientes
   
-  // GET /enderecos/externo/{cep} 
+  // GET /endereco/enderecos/externo/{cep} 
   buscarCep: async (cep) => {
     const cepLimpo = cep.replace(/\D/g, '');
-    return (await api.get(`/enderecos/externo/${cepLimpo}`)).data; 
+    return (await api.get(`/endereco/enderecos/externo/${cepLimpo}`)).data; 
   },
 
   // GET /ufs
@@ -45,35 +45,35 @@ export const SistemaService = {
     return (await api.get('/endereco/tipos-logradouro')).data;
   },
 
-  // POST /api/clientes/cadastrar
+  // POST /aluguel/clientes/cadastrar
   cadastrarCliente: async (payload) => {
-    return await api.post('/api/clientes/cadastrar', payload);
+    return await api.post('/aluguel/clientes/cadastrar', payload);
   },
   
-  // POST /api/clientes/buscar-id
+  // POST /aluguel/clientes/buscar-id
   buscarClientePorId: async (id) => {
-    return (await api.post('/api/clientes/buscar-id', { idPessoa: id })).data;
+    return (await api.post('/aluguel/clientes/buscar-id', { idPessoa: id })).data;
   },
 
-  // POST /api/clientes/buscar-cpf
+  // POST /aluguel/clientes/buscar-cpf
   buscarClientePorCpf: async (cpf) => {
-    return (await api.post('/api/clientes/buscar-cpf', { cpf })).data;
+    return (await api.post('/aluguel/clientes/buscar-cpf', { cpf })).data;
   },
 
   // Aluguel
   
-  // POST /api/aluguel/registrar
+  // POST /aluguel/aluguel/registrar
   registrarAluguel: async (payload) => {
-    return await api.post('/api/aluguel/registrar', payload);
+    return await api.post('/aluguel/aluguel/registrar', payload);
   },
   
-  // GET /api/aluguel/consultar
+  // GET /aluguel/aluguel/consultar
   listarAlugueis: async () => {
-    return (await api.get('/api/aluguel/consultar')).data;
+    return (await api.get('/aluguel/aluguel/consultar')).data;
   },
 
-  // POST /api/aluguel/buscar-numero
+  // POST /aluguel/aluguel/buscar-numero
   buscarAluguelPorNumero: async (nroAluguel) => {
-    return (await api.post('/api/aluguel/buscar-numero', { nroAluguel })).data;
+    return (await api.post('/aluguel/aluguel/buscar-numero', { nroAluguel })).data;
   }
 };

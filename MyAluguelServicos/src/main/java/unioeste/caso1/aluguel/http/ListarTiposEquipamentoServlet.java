@@ -10,7 +10,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
 
-@WebServlet("/api/tipos-equipamento")
+@WebServlet("/tipos-equipamento")
 public class ListarTiposEquipamentoServlet extends HttpServlet {
 
     @Override
