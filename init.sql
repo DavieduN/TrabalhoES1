@@ -178,3 +178,71 @@ INSERT INTO Equipamento (nomeEquipamento, valorDiaria, idTipoEquipamento) VALUES
 ('Betoneira 400L', 120.00, 3),
 ('Jogo de Chaves Combinadas', 15.00, 1);
 
+-- Ordem de Serviço
+
+CREATE TABLE Atendente (
+    idAtendente SERIAL PRIMARY KEY,
+    nome VARCHAR(100) NOT NULL,
+    cpf VARCHAR(14) NOT NULL UNIQUE,
+    matricula VARCHAR(20) NOT NULL UNIQUE,
+    idEndereco INT NOT NULL,
+    numero VARCHAR(20) NOT NULL,
+    complemento VARCHAR(50),
+    
+    CONSTRAINT fk_atendente_endereco FOREIGN KEY (idEndereco) REFERENCES Endereco (idEndereco)
+);
+
+CREATE TABLE TelefoneAtendente (
+    idTelefone SERIAL PRIMARY KEY,
+    numero VARCHAR(20) NOT NULL,
+    idDdd INT NOT NULL,
+    idDdi INT NOT NULL,
+    idAtendente INT NOT NULL,
+    
+    CONSTRAINT fk_tel_atendente_ddd FOREIGN KEY (idDdd) REFERENCES DDD (idDdd),
+    CONSTRAINT fk_tel_atendente_ddi FOREIGN KEY (idDdi) REFERENCES DDI (idDdi),
+    CONSTRAINT fk_tel_atendente FOREIGN KEY (idAtendente) REFERENCES Atendente (idAtendente) ON DELETE CASCADE
+);
+
+CREATE TABLE EmailAtendente (
+    idEmail SERIAL PRIMARY KEY,
+    enderecoEmail VARCHAR(150) NOT NULL,
+    idAtendente INT NOT NULL,
+    CONSTRAINT fk_email_atendente FOREIGN KEY (idAtendente) REFERENCES Atendente (idAtendente) ON DELETE CASCADE
+);
+
+CREATE TABLE TipoServico (
+    idTipoServico SERIAL PRIMARY KEY,
+    nomeTipoServico VARCHAR(100) NOT NULL UNIQUE
+);
+
+CREATE TABLE OrdemServico (
+    nroOrdemServico SERIAL PRIMARY KEY,
+    
+    dataEmissao DATE NOT NULL,
+    valorTotal FLOAT NOT NULL,
+    descricao VARCHAR(255),
+    
+    idCliente INT NOT NULL,   
+    idAtendente INT NOT NULL, 
+    
+    CONSTRAINT fk_os_cliente FOREIGN KEY (idCliente) REFERENCES Cliente (idCliente),
+    CONSTRAINT fk_os_atendente FOREIGN KEY (idAtendente) REFERENCES Atendente (idAtendente)
+);
+
+CREATE TABLE ItemServico (
+    idItemServico SERIAL PRIMARY KEY,
+    valorCobrado FLOAT NOT NULL,
+    
+    idTipoServico INT NOT NULL,
+    nroOrdemServico INT NOT NULL,
+    
+    CONSTRAINT fk_item_tipo FOREIGN KEY (idTipoServico) REFERENCES TipoServico (idTipoServico),
+    CONSTRAINT fk_item_os FOREIGN KEY (nroOrdemServico) REFERENCES OrdemServico (nroOrdemServico) ON DELETE CASCADE
+);
+
+INSERT INTO TipoServico (nomeServico) VALUES 
+('Formatação de Computador'),
+('Limpeza Interna'),
+('Instalação de Software'),
+('Troca de Peça') ON CONFLICT DO NOTHING;

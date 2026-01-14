@@ -8,7 +8,7 @@ import java.util.List;
 public class OrdemServico implements Serializable {
     private static final long serialVersionUID = 1L;
 
-    private int idOrdemServico;
+    private int nroOrdemServico;
     private LocalDate dataEmissao;
     private String descricaoProblema;
     private double valorTotal;
@@ -16,36 +16,36 @@ public class OrdemServico implements Serializable {
     private Cliente cliente;
     private Atendente atendente;
 
-    private List<Servico> listaServicos;
+    private List<ItemServico> listaItens;
 
     public OrdemServico() {
         this.cliente = new Cliente();
         this.atendente = new Atendente();
-        this.listaServicos = new ArrayList<>();
+        this.listaItens = new ArrayList<>();
         this.dataEmissao = LocalDate.now();
     }
 
-    public OrdemServico(int idOrdemServico, LocalDate dataEmissao, String descricaoProblema,
+    public OrdemServico(int nroOrdemServico, LocalDate dataEmissao, String descricaoProblema,
                         double valorTotal, Cliente cliente, Atendente atendente) {
-        this.idOrdemServico = idOrdemServico;
+        this.nroOrdemServico = nroOrdemServico;
         this.dataEmissao = dataEmissao;
         this.descricaoProblema = descricaoProblema;
         this.valorTotal = valorTotal;
         this.cliente = cliente;
         this.atendente = atendente;
-        this.listaServicos = new ArrayList<>();
+        this.listaItens = new ArrayList<>();
     }
 
-
-    public void adicionarServico(Servico s) {
-        this.listaServicos.add(s);
+    public void adicionarItem(ItemServico item) {
+        this.listaItens.add(item);
     }
-    public void removerServico(Servico s) {
-        this.listaServicos.remove(s);
+    
+    public void removerItem(ItemServico item) {
+        this.listaItens.remove(item);
     }
 
-    public int getIdOrdemServico() { return idOrdemServico; }
-    public void setIdOrdemServico(int idOrdemServico) { this.idOrdemServico = idOrdemServico; }
+    public int getnroOrdemServico() { return nroOrdemServico; }
+    public void setnroOrdemServico(int nroOrdemServico) { this.nroOrdemServico = nroOrdemServico; }
 
     public LocalDate getDataEmissao() { return dataEmissao; }
     public void setDataEmissao(LocalDate dataEmissao) { this.dataEmissao = dataEmissao; }
@@ -62,8 +62,8 @@ public class OrdemServico implements Serializable {
     public Atendente getAtendente() { return atendente; }
     public void setAtendente(Atendente atendente) { this.atendente = atendente; }
 
-    public List<Servico> getListaServicos() { return listaServicos; }
-    public void setListaServicos(List<Servico> listaServicos) {
-        this.listaServicos = listaServicos;
+    public List<Servico> getListaItens() { return listaItens; }
+    public void setListaItens(List<Servico> listaItens) {
+        this.listaItens = listaItens;
     }
 }
