@@ -1,5 +1,6 @@
 /app/MyAluguelServicos/src/main/java/unioeste/caso1/aluguel/dao/EquipamentoDAO.java
 /app/MyAluguelServicos/src/main/java/unioeste/caso1/aluguel/http/ListarTiposEquipamentoServlet.java
+/app/MyAluguelServicos/src/main/java/unioeste/caso1/aluguel/http/BuscarClientePorIdServlet.java
 /app/MyAluguelServicos/src/main/java/unioeste/caso1/aluguel/http/RegistrarAluguelServlet.java
 /app/MyAluguelServicos/src/main/java/unioeste/caso1/aluguel/manager/UCAluguelServicos.java
 /app/MyAluguelServicos/src/main/java/unioeste/caso1/aluguel/dao/TipoEquipamentoDAO.java
@@ -7,14 +8,15 @@
 /app/MyAluguelServicos/src/main/java/unioeste/caso1/aluguel/http/ListarEquipamentosServlet.java
 /app/MyAluguelServicos/src/main/java/unioeste/caso1/aluguel/manager/UCEquipamentoServicos.java
 /app/MyAluguelServicos/src/main/java/unioeste/caso1/aluguel/http/CadastrarEquipamentoServlet.java
-/app/MyAluguelServicos/src/main/java/unioeste/caso1/aluguel/dao/TelefoneClienteDAO.java
+/app/MyAluguelServicos/src/main/java/unioeste/caso1/aluguel/http/BuscarClientePorCpfServlet.java
 /app/MyAluguelServicos/src/main/java/unioeste/caso1/aluguel/col/EquipamentoCol.java
 /app/MyAluguelServicos/src/main/java/unioeste/caso1/aluguel/col/TipoEquipamentoCol.java
+/app/MyAluguelServicos/src/main/java/unioeste/caso1/aluguel/dao/TelefoneClienteDAO.java
 /app/MyAluguelServicos/src/main/java/unioeste/caso1/aluguel/http/CadastrarTipoEquipamentoServlet.java
 /app/MyAluguelServicos/src/main/java/unioeste/caso1/aluguel/dao/AluguelDAO.java
 /app/MyAluguelServicos/src/main/java/unioeste/caso1/aluguel/manager/UCClienteServicos.java
-/app/MyAluguelServicos/src/main/java/unioeste/caso1/aluguel/dao/EmailClienteDAO.java
 /app/MyAluguelServicos/src/main/java/unioeste/caso1/aluguel/dao/ClienteDAO.java
+/app/MyAluguelServicos/src/main/java/unioeste/caso1/aluguel/dao/EmailClienteDAO.java
 /app/MyAluguelServicos/src/main/java/unioeste/caso1/aluguel/http/BuscarAluguelPorNumeroServlet.java
 /app/MyAluguelServicos/src/main/java/unioeste/caso1/aluguel/http/CadastrarClienteServlet.java
 /app/MyAluguelServicos/src/main/java/unioeste/caso1/aluguel/http/ConsultarAluguelServlet.java

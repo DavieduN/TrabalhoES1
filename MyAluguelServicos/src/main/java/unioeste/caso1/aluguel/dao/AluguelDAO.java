@@ -9,45 +9,30 @@ import java.util.List;
 
 public class AluguelDAO {
 
-    private final String SQL_SELECT_COMPLETO =
-            "SELECT a.*, c.nome as nomeCliente, e.nomeEquipamento, e.valorDiaria " +
-                    "FROM Aluguel a " +
-                    "INNER JOIN Cliente c ON a.idCliente = c.idCliente " +
-                    "INNER JOIN Equipamento e ON a.idEquipamento = e.idEquipamento ";
+    private final String SQL_SELECT_COMPLETO = 
+        "SELECT a.*, c.nome as nomeCliente, e.nomeEquipamento, e.valorDiaria " +
+        "FROM Aluguel a " +
+        "INNER JOIN Cliente c ON a.idCliente = c.idCliente " +
+        "INNER JOIN Equipamento e ON a.idEquipamento = e.idEquipamento ";
 
     public void registrar(Connection con, Aluguel aluguel) throws Exception {
-        String sql = "INSERT INTO Aluguel (nroAluguel, dataPedido, dataLocacao, dataDevolucao, valorTotalLocacao, idCliente, idEquipamento) " +
-                "VALUES (?, ?, ?, ?, ?, ?, ?) RETURNING idAluguel";
+        String sql = "INSERT INTO Aluguel (dataPedido, dataLocacao, dataDevolucao, valorTotalLocacao, idCliente, idEquipamento) " +
+                     "VALUES (?, ?, ?, ?, ?, ?) RETURNING nroAluguel";
 
         try (PreparedStatement stmt = con.prepareStatement(sql)) {
-            stmt.setInt(1, aluguel.getNroAluguel());
-            stmt.setDate(2, Date.valueOf(aluguel.getDataPedido()));
-            stmt.setDate(3, Date.valueOf(aluguel.getDataLocacao()));
-            stmt.setDate(4, Date.valueOf(aluguel.getDataDevolucao()));
-            stmt.setDouble(5, aluguel.getValorTotalLocacao());
-            stmt.setInt(6, aluguel.getCliente().getIdPessoa());
-            stmt.setInt(7, aluguel.getEquipamento().getIdEquipamento());
+            stmt.setDate(1, Date.valueOf(aluguel.getDataPedido()));
+            stmt.setDate(2, Date.valueOf(aluguel.getDataLocacao()));
+            stmt.setDate(3, Date.valueOf(aluguel.getDataDevolucao()));
+            stmt.setDouble(4, aluguel.getValorTotalLocacao());
+            stmt.setInt(5, aluguel.getCliente().getIdPessoa());
+            stmt.setInt(6, aluguel.getEquipamento().getIdEquipamento());
 
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
-                    aluguel.setIdAluguel(rs.getInt("idAluguel"));
+                    aluguel.setNroAluguel(rs.getInt("nroAluguel"));
                 }
             }
         }
-    }
-
-    public Aluguel buscarPorNumero(Connection con, int nroAluguel) throws Exception {
-        String sql = SQL_SELECT_COMPLETO + "WHERE a.nroAluguel = ?";
-
-        try (PreparedStatement stmt = con.prepareStatement(sql)) {
-            stmt.setInt(1, nroAluguel);
-            try (ResultSet rs = stmt.executeQuery()) {
-                if (rs.next()) {
-                    return montarAluguel(rs);
-                }
-            }
-        }
-        return null;
     }
 
     public List<Aluguel> buscarTodos(Connection con) throws Exception {
@@ -64,10 +49,23 @@ public class AluguelDAO {
         return lista;
     }
 
+    public Aluguel buscarPorNumero(Connection con, int nroAluguel) throws Exception {
+        String sql = SQL_SELECT_COMPLETO + "WHERE a.nroAluguel = ?";
+        
+        try (PreparedStatement stmt = con.prepareStatement(sql)) {
+            stmt.setInt(1, nroAluguel);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return montarAluguel(rs);
+                }
+            }
+        }
+        return null;
+    }
+
     private Aluguel montarAluguel(ResultSet rs) throws Exception {
         Aluguel a = new Aluguel();
-        a.setIdAluguel(rs.getInt("idAluguel"));
-        a.setNroAluguel(rs.getInt("nroAluguel"));
+        a.setNroAluguel(rs.getInt("nroAluguel")); 
         a.setDataPedido(rs.getDate("dataPedido").toLocalDate());
         a.setDataLocacao(rs.getDate("dataLocacao").toLocalDate());
         a.setDataDevolucao(rs.getDate("dataDevolucao").toLocalDate());

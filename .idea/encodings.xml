@@ -3,6 +3,8 @@
   <component name="Encoding">
     <file url="file://$PROJECT_DIR$/MyAluguelBO/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/MyAluguelBO/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/MyAluguelServicos/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/MyAluguelServicos/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/MyEnderecoBO/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/MyEnderecoBO/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/MyEnderecoServicos/src/main/java" charset="UTF-8" />

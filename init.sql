@@ -158,8 +158,7 @@ CREATE TABLE Equipamento (
 );
 
 CREATE TABLE Aluguel (
-    idAluguel SERIAL PRIMARY KEY,
-    nroAluguel INT,
+    nroAluguel SERIAL PRIMARY KEY,
     dataPedido DATE NOT NULL,
     dataLocacao DATE NOT NULL,
     dataDevolucao DATE NOT NULL,

@@ -42,13 +42,26 @@ services:
       db:
         condition: service_healthy
 
-  frontend:
+  frontend_endereco:
     build: ./EnderecoFront
     container_name: trabalho_frontend_endereco
     ports:
       - "5173:5173"
     volumes:
       - ./EnderecoFront:/app
+      - /app/node_modules
+    environment:
+      - VITE_API_URL=http://localhost:8080
+    depends_on:
+      - app
+
+  frontend_aluguel:
+    build: ./AluguelFront
+    container_name: trabalho_frontend_aluguel
+    ports:
+      - "5174:5173"
+    volumes:
+      - ./AluguelFront:/app
       - /app/node_modules
     environment:
       - VITE_API_URL=http://localhost:8080

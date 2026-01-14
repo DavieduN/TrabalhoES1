@@ -28,7 +28,7 @@ public class BuscarClientePorIdServlet extends HttpServlet {
 
         try {
             JSONObject json = new JSONObject(sb.toString());
-            int id = json.optInt("idCliente", 0);
+            int id = json.optInt("idPessoa", 0);
 
             UCClienteServicos servicos = new UCClienteServicos();
             Cliente encontrado = servicos.buscarClientePorId(id);

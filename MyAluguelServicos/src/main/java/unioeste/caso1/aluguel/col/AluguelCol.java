@@ -30,9 +30,8 @@ public class AluguelCol {
         if (nroAluguel <= 0) {
             throw new Exception("Número do aluguel inválido para busca.");
         }
-
-        Aluguel encontrado = dao.buscarPorNumero(con, nroAluguel);
-        return encontrado;
+        
+        return dao.buscarPorNumero(con, nroAluguel);
     }
 
     public List<Aluguel> consultarAlugueis(Connection con) throws Exception {

@@ -106,7 +106,7 @@ public class UCAluguelServicos {
                     a.setEquipamento(completo);
                 }
             } catch (Exception e) {
-                System.err.println("Erro ao carregar equipamento: " + e.getMessage());
+                System.err.println("Erro ao carregar equipamento ID " + a.getEquipamento().getIdEquipamento() + ": " + e.getMessage());
             }
         }
     }

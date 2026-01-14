@@ -4,8 +4,8 @@ unioeste/caso1/aluguel/http/ListarEquipamentosServlet.class
 unioeste/caso1/aluguel/http/CadastrarTipoEquipamentoServlet.class
 unioeste/caso1/aluguel/http/ConsultarAluguelServlet.class
 unioeste/caso1/aluguel/http/CadastrarClienteServlet.class
-unioeste/caso1/aluguel/dao/AluguelDAO.class
 unioeste/caso1/aluguel/col/AluguelCol.class
+unioeste/caso1/aluguel/dao/AluguelDAO.class
 unioeste/caso1/aluguel/manager/UCClienteServicos.class
 unioeste/caso1/aluguel/http/CadastrarEquipamentoServlet.class
 unioeste/caso1/aluguel/http/ListarTiposEquipamentoServlet.class

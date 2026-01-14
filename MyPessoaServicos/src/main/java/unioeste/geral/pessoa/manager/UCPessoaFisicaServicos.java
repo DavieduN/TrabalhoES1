@@ -73,12 +73,7 @@ public class UCPessoaFisicaServicos<T extends PessoaFisica> {
         Connection con = null;
         try {
             con = conexaoBD.getConexao();
-            T pessoa = pessoaCol.buscarPorId(con, id);
-            if (pessoa != null) {
-                pessoa.setTelefones(telefoneCol.buscarPorPessoa(con, id));
-                pessoa.setEmails(emailCol.buscarPorPessoa(con, id));
-            }
-            return pessoa;
+            return buscarPorId(con, id);
         } finally {
             ConexaoBD.fecharConexao(con, null, null);
         }

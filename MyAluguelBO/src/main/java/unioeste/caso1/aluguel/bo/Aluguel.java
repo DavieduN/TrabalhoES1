@@ -7,7 +7,6 @@ import java.time.temporal.ChronoUnit;
 public class Aluguel implements Serializable {
     private static final long serialVersionUID = 1L;
 
-    private int idAluguel;
     private int nroAluguel;
 
     private Cliente cliente;
@@ -24,10 +23,9 @@ public class Aluguel implements Serializable {
         this.equipamento = new Equipamento();
     }
 
-    public Aluguel(int idAluguel, int nroAluguel, Cliente cliente, Equipamento equipamento,
+    public Aluguel(int nroAluguel, Cliente cliente, Equipamento equipamento,
                    LocalDate dataPedido, LocalDate dataLocacao, LocalDate dataDevolucao,
                    double valorTotalLocacao) {
-        this.idAluguel = idAluguel;
         this.nroAluguel = nroAluguel;
         this.cliente = cliente;
         this.equipamento = equipamento;
@@ -36,9 +34,6 @@ public class Aluguel implements Serializable {
         this.dataDevolucao = dataDevolucao;
         this.valorTotalLocacao = valorTotalLocacao;
     }
-
-    public int getIdAluguel() { return idAluguel; }
-    public void setIdAluguel(int idAluguel) { this.idAluguel = idAluguel; }
 
     public int getNroAluguel() { return nroAluguel; }
     public void setNroAluguel(int nroAluguel) { this.nroAluguel = nroAluguel; }
