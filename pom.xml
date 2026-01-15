@@ -18,6 +18,8 @@
         <module>MyPessoaServicos</module>
         <module>MyAluguelBO</module>
         <module>MyAluguelServicos</module>
+        <module>MyOrdemServicoBO</module>
+        <module>MyOrdemServicoServicos</module>
     </modules>
 
     <properties>
