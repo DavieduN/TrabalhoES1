@@ -1,0 +1,35 @@
+# --- Maven / Java ---
+target/
+*.class
+*.jar
+*.war
+*.ear
+*.log
+
+# IntelliJ IDEA / Eclipse / VSCode
+.idea/
+*.iml
+.classpath
+.project
+.settings/
+.vscode/
+bin/
+
+# --- Node / Frontend ---
+node_modules/
+dist/
+build/
+.env
+.env.local
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.DS_Store
+
+# --- Docker ---
+# Se você tiver volumes mapeados localmente que não devem subir
+pgdata/
+docker-compose.override.yml
+
+# --- Arquivos de Teste/Cobertura ---
+coverage/
