@@ -5,7 +5,7 @@ import java.io.Serializable;
 public class ItemServico implements Serializable {
     private static final long serialVersionUID = 1L;
 
-    private int idServico;
+    private int idItemServico;
     private double valorServico;
     private TipoServico tipoServico;
 
@@ -13,14 +13,14 @@ public class ItemServico implements Serializable {
         this.tipoServico = new TipoServico();
     }
 
-    public ItemServico(int idServico, double valorServico, TipoServico tipoServico) {
-        this.idServico = idServico;
+    public ItemServico(int idItemServico, double valorServico, TipoServico tipoServico) {
+        this.idItemServico = idItemServico;
         this.valorServico = valorServico;
         this.tipoServico = tipoServico;
     }
 
-    public int getIdServico() { return idServico; }
-    public void setIdServico(int idServico) { this.idServico = idServico; }
+    public int getIdItemServico() { return idItemServico; }
+    public void setIdItemServico(int idItemServico) { this.idItemServico = idItemServico; }
 
     public double getValorServico() { return valorServico; }
     public void setValorServico(double valorServico) { this.valorServico = valorServico; }

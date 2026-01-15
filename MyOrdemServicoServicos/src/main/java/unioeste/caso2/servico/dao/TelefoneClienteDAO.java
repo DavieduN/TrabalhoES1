@@ -1,4 +1,4 @@
-package unioeste.caso1.aluguel.dao;
+package unioeste.caso2.servico.dao;
 
 import unioeste.geral.pessoa.bo.DDD;
 import unioeste.geral.pessoa.bo.DDI;

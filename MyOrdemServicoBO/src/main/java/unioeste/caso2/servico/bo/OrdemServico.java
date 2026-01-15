@@ -44,8 +44,8 @@ public class OrdemServico implements Serializable {
         this.listaItens.remove(item);
     }
 
-    public int getnroOrdemServico() { return nroOrdemServico; }
-    public void setnroOrdemServico(int nroOrdemServico) { this.nroOrdemServico = nroOrdemServico; }
+    public int getNroOrdemServico() { return nroOrdemServico; }
+    public void setNroOrdemServico(int nroOrdemServico) { this.nroOrdemServico = nroOrdemServico; }
 
     public LocalDate getDataEmissao() { return dataEmissao; }
     public void setDataEmissao(LocalDate dataEmissao) { this.dataEmissao = dataEmissao; }
@@ -62,8 +62,8 @@ public class OrdemServico implements Serializable {
     public Atendente getAtendente() { return atendente; }
     public void setAtendente(Atendente atendente) { this.atendente = atendente; }
 
-    public List<Servico> getListaItens() { return listaItens; }
-    public void setListaItens(List<Servico> listaItens) {
+    public List<ItemServico> getListaItens() { return listaItens; }
+    public void setListaItens(List<ItemServico> listaItens) {
         this.listaItens = listaItens;
     }
 }

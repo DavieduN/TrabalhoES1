@@ -70,8 +70,10 @@ public class UCOrdemServicoServicos {
         try {
             con = conexaoBD.getConexao();
             List<OrdemServico> lista = osCol.consultarTodas(con);
+            
             for (OrdemServico os : lista) {
                 carregarCliente(con, os);
+                carregarAtendente(con, os);
                 carregarItens(con, os);
             }
             return lista;
@@ -87,17 +89,47 @@ public class UCOrdemServicoServicos {
             OrdemServico os = osCol.buscarPorNumero(con, nro);
             
             if (os != null) {
-                os.setListaItens(itemCol.buscarPorOS(con, nro));
-                
-                Cliente c = clienteService.buscarClientePorId(con, os.getCliente().getIdPessoa());
-                os.setCliente(c);
-                
-                Atendente a = atendenteService.buscarAtendentePorId(con, os.getAtendente().getIdPessoa());
-                os.setAtendente(a);
+                carregarCliente(con, os);
+                carregarAtendente(con, os);
+                carregarItens(con, os);
             }
             return os;
         } finally {
             ConexaoBD.fecharConexao(con, null, null);
+        }
+    }
+
+    private void carregarCliente(Connection con, OrdemServico os) {
+        if (os.getCliente() != null && os.getCliente().getIdPessoa() > 0) {
+            try {
+                Cliente c = clienteService.buscarClientePorId(con, os.getCliente().getIdPessoa());
+                if (c != null) {
+                    os.setCliente(c);
+                }
+            } catch (Exception e) {
+                System.err.println("Erro ao carregar cliente na OS " + os.getNroOrdemServico() + ": " + e.getMessage());
+            }
+        }
+    }
+
+    private void carregarAtendente(Connection con, OrdemServico os) {
+        if (os.getAtendente() != null && os.getAtendente().getIdPessoa() > 0) {
+            try {
+                Atendente a = atendenteService.buscarAtendentePorId(con, os.getAtendente().getIdPessoa());
+                if (a != null) {
+                    os.setAtendente(a);
+                }
+            } catch (Exception e) {
+                System.err.println("Erro ao carregar atendente na OS " + os.getNroOrdemServico() + ": " + e.getMessage());
+            }
+        }
+    }
+
+    private void carregarItens(Connection con, OrdemServico os) {
+        try {
+            os.setListaItens(itemCol.buscarPorOS(con, os.getNroOrdemServico()));
+        } catch (Exception e) {
+            System.err.println("Erro ao carregar itens na OS " + os.getNroOrdemServico() + ": " + e.getMessage());
         }
     }
 }
