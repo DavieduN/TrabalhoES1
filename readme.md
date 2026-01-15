@@ -1,21 +1,15 @@
-# Serviço de Gestão de Endereços (Trabalho T3B)
+# Sistema Integrado de Gestão (Trabalhos T3B, T4A e T4B)
 
-API RESTful desenvolvida em Java 17 (Jakarta EE 9 / Tomcat 10) para gestão centralizada de endereços, focada em integridade de dados e alta performance. O projeto utiliza PostgreSQL, é totalmente containerizado com Docker e segue uma arquitetura multicamadas estrita.
-
-## 📋 Visão Geral para Consumidores da API
-
-Esta API atua como um **Catálogo Mestre de Endereços Únicos**.
-
-**Diferença Importante:** Diferente de cadastros comuns, este serviço armazena apenas a definição do logradouro (CEP + Cidade + Bairro + Rua). Dados específicos como **Número Predial** e **Complemento** (ex: "Apto 101") foram removidos deste escopo e devem ser geridos pelas aplicações clientes (ex: Módulo de Pessoas), referenciando o ID do Endereço gerado aqui.
+Este repositório contém a implementação de três módulos integrados de Engenharia de Software, desenvolvidos em Java (Jakarta EE / Servlets) com arquitetura multicamadas, persistência em PostgreSQL e containerização Docker.
 
 ---
 
 ## 🚀 Como Rodar o Projeto
 
 ### Pré-requisitos
-- **Docker** e **Docker Compose** instalados. (Não é necessário Java/Maven local).
+- **Docker** e **Docker Compose** instalados.
 
-### Passo Único
+### 1. Iniciar a Aplicação
 Abra o terminal na raiz do projeto e execute:
 
 ```bash
@@ -24,97 +18,132 @@ docker-compose up --build
 
 O ambiente subirá os seguintes serviços:
 1.  **Banco de Dados (PostgreSQL 15):** Porta 5432.
-2.  **Back-end (Tomcat 10):** `http://localhost:8080/endereco`
-3.  **Frontend (React/Vite):** `http://localhost:5173`
-4.  **Testes Automatizados:** Rodam automaticamente na subida do container `testes`.
+2.  **Back-end (Tomcat 10):** Porta 8080 (Hospedando 3 WARs distintos).
+3.  **Front-ends (React):** Portas 5173, 5174 e 5175.
+4.  **Testes:** Executados automaticamente na subida.
 
-*Para resetar o banco de dados (limpar volumes):* `docker-compose down -v`
+### 2. Limpar Dados
+Para parar e **resetar o banco de dados** (apagar volumes), execute:
 
----
-
-## 🔌 Documentação da API (Endpoints)
-
-Todas as requisições e respostas são em JSON (UTF-8).
-
-### 📍 Domínios (Auxiliares)
-Endpoints de leitura para popular combos no Frontend.
-
-| Método | Endpoint                     | Descrição                                                  |
-|---|------------------------------|------------------------------------------------------------|
-| GET | `/endereco/ufs`              | Lista todas as Unidades Federativas (Sigla/Nome) ordenadas |
-| GET | `/endereco/tipos-logradouro` | Lista tipos (Rua, Avenida, Praça...) ordenados             |
-
-### 🔍 Consultas de Endereço
-
-#### 1. Consultar no ViaCEP (Externo)
-Busca dados na base nacional. Retorna um objeto `Endereco` transitório (não salvo no banco).
-- **GET** `/endereco/enderecos/externo/{cep}`
-- **Exemplo:** `GET .../endereco/enderecos/externo/85867900`
-
-#### 2. Consultar no Banco Local (Por CEP)
-Retorna lista de endereços já cadastrados naquele CEP.
-- **GET** `/endereco/enderecos/cep/{cep}`
-
-#### 3. Buscar Endereço por ID
-Recupera a árvore completa (Cidade, UF, Bairro) de um endereço.
-- **POST** `/endereco/enderecos/buscar-id`
-- **Body:** `{ "idEndereco": 1 }`
-
-#### 4. Buscar Cidade por ID
-- **POST** `/endereco/cidades/buscar-id`
-- **Body:** `{ "idCidade": 5 }`
-
----
-
-### 📝 Cadastro Inteligente (Orquestrado)
-
-Este é o endpoint principal. Ele implementa o padrão **Idempotente**: se você tentar cadastrar um endereço que já existe (mesmo CEP, Cidade, Bairro e Logradouro), a API **não duplica** o registro e nem gera erro; ela retorna o endereço existente com seu ID.
-
-Ele também realiza o cadastro em cascata: se a Cidade ou Bairro informados não existirem, são criados automaticamente.
-
-- **POST** `/endereco/enderecos/cadastrar`
-- **Body (JSON):**
-
-```json
-{
-  "cep": "85867900",
-  "cidade": {
-    "nomeCidade": "Foz do Iguaçu",
-    "unidadeFederativa": { "siglaUF": "PR" }
-  },
-  "bairro": {
-    "nomeBairro": "Parque Tecnológico"
-  },
-  "logradouro": {
-    "nomeLogradouro": "Tancredo Neves",
-    "tipoLogradouro": { "nomeTipoLogradouro": "Avenida" }
-  }
-}
+```bash
+docker-compose down -v
 ```
 
 ---
 
-## 🏗️ Arquitetura e Decisões de Design
+## 🏗️ Arquitetura e Implementação
 
-O sistema foi projetado seguindo rigorosamente a separação de responsabilidades em camadas Java puras (sem Spring), facilitando o entendimento do ciclo de vida da transação.
+O sistema segue uma arquitetura modular estrita para garantir reuso de código e integridade transacional.
 
-### 1. Camadas do Back-end
-* **HTTP (Servlets):** Camada de fronteira. Recebe JSON, faz a desserialização segura e valida a presença básica dos dados. Delega para o Manager.
-* **Manager (Service Facade):** O "Maestro". Responsável por abrir a conexão com o banco, iniciar a transação (`setAutoCommit(false)`), orquestrar a chamada sequencial aos Cols (Valida UF -> Obtém Cidade -> Obtém Bairro -> Salva Endereço) e realizar o `commit` ou `rollback`.
-* **Col (Business Logic):** O "Especialista". Contém as regras de validação (Regex, Tamanho), formatação de texto e a lógica de "Obter ou Cadastrar". Não abre conexões; recebe a conexão ativa do Manager.
-* **DAO (Data Access):** O "Executor". Executa SQL puro via JDBC. Totalmente passivo, apenas usa a conexão recebida.
+### Módulos Maven
+* **MyInfraAPI:** Conexão com Banco (Híbrida JNDI/JDBC) e utilitários HTTP.
+* **MyEndereco (Core):** Gestão de Endereços, Cidades e Bairros.
+* **MyPessoa (Core Genérico):** Lógica abstrata para Pessoas Físicas, validação de CPF, formatação de nomes e gestão de contatos (Telefone/Email).
+* **MyAluguel (T4A):** Implementação concreta de Cliente e regras de aluguel de equipamentos.
+* **MyOrdemServico (T4B):** Implementação concreta de Atendente e regras de OS.
 
-### 2. Padrões e Soluções Técnicas
-* **Idempotência (`obterOuCadastrar`):** Garante a integridade referencial e evita a poluição do banco com duplicatas.
-* **Sanitização de Dados (`TextoUtil`):**
-    * **Title Case Inteligente:** Formata nomes respeitando a gramática brasileira (ex: "Foz **do** Iguaçu" vs "Praça **da** Sé" vs "**D'Oeste**").
-    * **Validação Regex:** Bloqueia caracteres maliciosos (SQL Injection) e garante que apenas letras/números válidos sejam persistidos.
-* **Conexão Híbrida:** A classe `ConexaoBD` detecta o ambiente. Se estiver no Tomcat, usa **JNDI** (Pool gerenciado). Se estiver em testes unitários (Maven), faz fallback para **JDBC Direto** no Docker.
-* **Fail-Fast:** O Manager valida a integridade estrutural do objeto (ex: "Tem Cidade?") **antes** de abrir a conexão com o banco, economizando recursos.
+### Padrões de Projeto Utilizados
+* **Manager (Service Facade):** Orquestra a transação (Atomicidade), gerenciando a conexão e delegando para os Cols.
+* **Col (Business Logic):** Validações, regras de negócio e verificação de duplicidade (Idempotência).
+* **DAO (Data Access):** Execução pura de SQL recebendo a conexão aberta.
+* **Fail-Fast:** Validações estruturais ocorrem antes de abrir conexões com o banco.
 
-## 🛠️ Estrutura Modular (Maven)
+---
 
-- **MyInfraAPI:** Utilitários de infraestrutura (Conexão BD, ViaCEP).
-- **MyEnderecoBO:** Entidades de Domínio (POJOs).
-- **MyEnderecoServicos:** Regras de Negócio, DAOs e API HTTP (Gera o WAR).
-- **MyEnderecoTeste:** Testes de Integração (JUnit 5) com ordenação de execução para garantir cenários consistentes.
+## 🔌 Catálogo de Serviços (API)
+
+A aplicação roda no Tomcat na porta **8080**, dividida em 3 contextos (WARs).
+
+### 📍 T3B - Gestão de Endereços
+**Contexto:** `http://localhost:8080/endereco`
+
+| SERVIÇO | Descrição | Entrada (JSON) | Saída (JSON) | Endereço (Método) |
+| :--- | :--- | :--- | :--- | :--- |
+| **Listar UFs** | Lista Unidades Federativas para combo. | - | `[{"siglaUF": "PR", "nomeUF": "Paraná"}, ...]` | `/ufs`<br>**(GET)** |
+| **Listar Tipos Log.** | Lista Rua, Avenida, etc. | - | `[{"idTipoLogradouro": 1, "nomeTipoLogradouro": "Rua"}, ...]` | `/tipos-logradouro`<br>**(GET)** |
+| **Consultar ViaCEP** | Busca endereço em API externa. | URL Param | `{"cep": "85867900", "cidade": {...}, ...}` | `/enderecos/externo/{cep}`<br>**(GET)** |
+| **Cadastrar Endereço** | Salva endereço (com cascata para Cidade/Bairro). | Objeto Endereco | Objeto Endereco (com ID) | `/enderecos/cadastrar`<br>**(POST)** |
+
+---
+
+### 🛠️ T4A - Aluguel de Equipamentos
+**Contexto:** `http://localhost:8080/aluguel`
+
+#### 1. Clientes
+| SERVIÇO | Descrição | Entrada (JSON) | Saída (JSON) | Endereço (Método) |
+| :--- | :--- | :--- | :--- | :--- |
+| **Cadastrar Cliente** | Salva Cliente + Endereço + Contatos. | **Cliente Completo**<br>*(Ver Mod. A)* | **Cliente Completo**<br>*(Com `idCliente` gerado)* | `/clientes/cadastrar`<br>**(POST)** |
+| **Buscar por ID** | Busca dados do cliente. | `{"idCliente": 1}` | **Cliente Completo** | `/clientes/buscar-id`<br>**(POST)** |
+| **Buscar por CPF** | Busca cliente por documento. | `{"cpf": "12345678900"}` | **Cliente Completo** | `/clientes/buscar-cpf`<br>**(POST)** |
+
+#### 2. Estoque (Equipamentos)
+| SERVIÇO | Descrição | Entrada (JSON) | Saída (JSON) | Endereço (Método) |
+| :--- | :--- | :--- | :--- | :--- |
+| **Listar Tipos** | Lista categorias de equipamento. | - | `[{"idTipoEquipamento": 1, "nomeTipoEquipamento": "Ferramentas"}]` | `/tipos-equipamento`<br>**(GET)** |
+| **Cadastrar Tipo** | Cria nova categoria. | `{"nomeTipoEquipamento": "..."}` | Objeto Tipo (com ID) | `/tipos-equipamento/cadastrar`<br>**(POST)** |
+| **Listar Equipamentos** | Lista itens disponíveis. | - | `[{"idEquipamento": 1, "nomeEquipamento": "Furadeira", "valorDiaria": 50.0, "tipoEquipamento": {...}}]` | `/equipamentos`<br>**(GET)** |
+| **Cadastrar Item** | Adiciona item ao estoque. | Objeto Equipamento | Objeto Equipamento (com ID) | `/equipamentos/cadastrar`<br>**(POST)** |
+
+#### 3. Aluguel (Transação)
+| SERVIÇO | Descrição | Entrada (JSON) | Saída (JSON) | Endereço (Método) |
+| :--- | :--- | :--- | :--- | :--- |
+| **Registrar Aluguel** | Efetiva a locação. | `{"nroAluguel": 100, "dataLocacao": "...", "cliente": {"idCliente": 1}, "equipamento": {"idEquipamento": 5}}` | Objeto Aluguel (Com total calculado) | `/aluguel/registrar`<br>**(POST)** |
+| **Consultar Todos** | Relatório de aluguéis. | - | Lista de Aluguéis | `/aluguel/consultar`<br>**(GET)** |
+| **Buscar Aluguel** | Busca pelo número. | `{"nroAluguel": 100}` | Objeto Aluguel Completo | `/aluguel/buscar-numero`<br>**(POST)** |
+
+---
+
+### 🔧 T4B - Ordem de Serviço
+**Contexto:** `http://localhost:8080/os`
+
+#### 1. Atendentes
+| SERVIÇO | Descrição | Entrada (JSON) | Saída (JSON) | Endereço (Método) |
+| :--- | :--- | :--- | :--- | :--- |
+| **Cadastrar Atendente** | Salva Funcionário + Endereço + Contatos. | **Atendente Completo**<br>*(Ver Mod. A)* | **Atendente Completo**<br>*(Com `idAtendente` gerado)* | `/atendentes/cadastrar`<br>**(POST)** |
+| **Buscar por ID** | Busca dados do atendente. | `{"idAtendente": 1}` | **Atendente Completo** | `/atendentes/buscar-id`<br>**(POST)** |
+| **Buscar por CPF** | Busca atendente por documento. | `{"cpf": "12345678900"}` | **Atendente Completo** | `/atendentes/buscar-cpf`<br>**(POST)** |
+
+#### 2. Serviços (Catálogo)
+| SERVIÇO | Descrição | Entrada (JSON) | Saída (JSON) | Endereço (Método) |
+| :--- | :--- | :--- | :--- | :--- |
+| **Listar Tipos** | Lista serviços disponíveis (Mão de obra). | - | `[{"idTipoServico": 1, "nomeTipoServico": "Formatação"}]` | `/tipos-servico`<br>**(GET)** |
+| **Cadastrar Tipo** | Adiciona serviço ao catálogo. | `{"nomeTipoServico": "..."}` | Objeto Tipo (com ID) | `/tipos-servico/cadastrar`<br>**(POST)** |
+
+#### 3. Ordem de Serviço (Transação)
+| SERVIÇO | Descrição | Entrada (JSON) | Saída (JSON) | Endereço (Método) |
+| :--- | :--- | :--- | :--- | :--- |
+| **Registrar OS** | Cria OS com lista de itens. | `{"nroOrdemServico": 0, "cliente": {"idCliente": 1}, "atendente": {"idAtendente": 2}, "listaItens": [{"valorServico": 80.0, "tipoServico": {"idTipoServico": 1}}]}` | Objeto OS (Com total calculado e itens salvos) | `/ordem-servico/registrar`<br>**(POST)** |
+| **Consultar Todas** | Relatório de OSs. | - | Lista de OSs | `/ordem-servico/consultar`<br>**(GET)** |
+| **Buscar OS** | Busca pelo número. | `{"nroOrdemServico": 500}` | Objeto OS Completo | `/ordem-servico/buscar-numero`<br>**(POST)** |
+
+---
+
+### 📦 Modelo de Dados (JSON - Exemplo "Modelo A")
+*Estrutura válida para Cliente e Atendente (Pessoa Física Completa).*
+
+```json
+{
+  "nome": "João da Silva",
+  "cpf": "12345678900",
+  "numero": "100",
+  "complemento": "Apto 101",
+  "endereco": {
+    "cep": "85867900",
+    "cidade": {
+      "nomeCidade": "Foz do Iguaçu",
+      "unidadeFederativa": { "siglaUF": "PR" }
+    },
+    "bairro": { "nomeBairro": "Centro" },
+    "logradouro": {
+      "nomeLogradouro": "Brasil",
+      "tipoLogradouro": { "nomeTipoLogradouro": "Avenida" }
+    }
+  },
+  "telefones": [
+    { "numero": "999887766", "ddd": { "ddd": 45 }, "ddi": { "ddi": 55 } }
+  ],
+  "emails": [
+    { "enderecoEmail": "joao@email.com" }
+  ]
+}
+```
