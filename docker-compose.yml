@@ -67,3 +67,16 @@ services:
       - VITE_API_URL=http://localhost:8080
     depends_on:
       - app
+
+  frontend_os:
+    build: ./OrdemServicoFront
+    container_name: trabalho_frontend_os
+    ports:
+      - "5175:5173"
+    volumes:
+      - ./OrdemServicoFront:/app
+      - /app/node_modules
+    environment:
+      - VITE_API_URL=http://localhost:8080
+    depends_on:
+      - app
